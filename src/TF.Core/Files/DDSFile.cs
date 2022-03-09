@@ -27,7 +27,7 @@ namespace TF.Core.Files
             }
         }
 
-        protected override string Filter => "Ficheros DDS (*.dds)|*.dds|Todos los ficheros (*.*)|*.*";
+        protected override string Filter => "File DDS (*.dds)|*.dds|Tutti i file (*.*)|*.*";
 
         protected ScratchImage _currentDDS;
 

@@ -103,7 +103,7 @@ namespace TFGame.TheMissing.Files.Txt
             this.lblChangedLinesCount.Name = "lblChangedLinesCount";
             this.lblChangedLinesCount.Size = new System.Drawing.Size(124, 13);
             this.lblChangedLinesCount.TabIndex = 6;
-            this.lblChangedLinesCount.Text = "Líneas modificadas: X/Y";
+            this.lblChangedLinesCount.Text = "Righe modificate: X/Y";
             // 
             // btnSimpleImport
             // 
@@ -111,9 +111,8 @@ namespace TFGame.TheMissing.Files.Txt
             this.btnSimpleImport.Name = "btnSimpleImport";
             this.btnSimpleImport.Size = new System.Drawing.Size(97, 23);
             this.btnSimpleImport.TabIndex = 5;
-            this.btnSimpleImport.Text = "Importar (Simple)";
-            this.toolTip1.SetToolTip(this.btnSimpleImport, "Importa la traducción de un fichero .xlsx\n\nHace coincidir las líneas por el texto" +
-        " original.");
+            this.btnSimpleImport.Text = "Importa (Semplice)";
+            this.toolTip1.SetToolTip(this.btnSimpleImport, "Importa la traduzione da un file .xlsx\n\nIl numero di righe deve essere lo stesso dell'originale.");
             this.btnSimpleImport.UseVisualStyleBackColor = true;
             this.btnSimpleImport.Click += new System.EventHandler(this.btnSimpleImport_Click);
             // 
@@ -123,9 +122,8 @@ namespace TFGame.TheMissing.Files.Txt
             this.btnOffsetImport.Name = "btnOffsetImport";
             this.btnOffsetImport.Size = new System.Drawing.Size(97, 23);
             this.btnOffsetImport.TabIndex = 4;
-            this.btnOffsetImport.Text = "Importar (Offset)";
-            this.toolTip1.SetToolTip(this.btnOffsetImport, "Importa la traducción de un fichero .xlsx\n\nHace coincidir las líneas por el campo" +
-        " Offset");
+            this.btnOffsetImport.Text = "Importa (Offset)";
+            this.toolTip1.SetToolTip(this.btnOffsetImport, "Importa la traduzione da un file .xlsx\n\nLe righe devono corrispondere a quelle nel campo Offset");
             this.btnOffsetImport.UseVisualStyleBackColor = true;
             this.btnOffsetImport.Click += new System.EventHandler(this.btnOffsetImport_Click);
             // 
@@ -135,18 +133,18 @@ namespace TFGame.TheMissing.Files.Txt
             this.btnExport.Name = "btnExport";
             this.btnExport.Size = new System.Drawing.Size(97, 23);
             this.btnExport.TabIndex = 3;
-            this.btnExport.Text = "Exportar a Excel";
-            this.toolTip1.SetToolTip(this.btnExport, "Exporta las líneas a un fichero .xlsx");
+            this.btnExport.Text = "Esporta su Excel";
+            this.toolTip1.SetToolTip(this.btnExport, "Esporta le righe come file .xlsx");
             this.btnExport.UseVisualStyleBackColor = true;
             this.btnExport.Click += new System.EventHandler(this.btnExport_Click);
             // 
             // ExportFileDialog
             // 
-            this.ExportFileDialog.Filter = "Archivos Excel|*.xlsx";
+            this.ExportFileDialog.Filter = "File Excel|*.xlsx";
             // 
             // ImportFileDialog
             // 
-            this.ImportFileDialog.Filter = "Archivos Excel|*.xlsx";
+            this.ImportFileDialog.Filter = "File Excel|*.xlsx";
             // 
             // btnAutoAdjust
             // 
@@ -155,8 +153,8 @@ namespace TFGame.TheMissing.Files.Txt
             this.btnAutoAdjust.Name = "btnAutoAdjust";
             this.btnAutoAdjust.Size = new System.Drawing.Size(97, 23);
             this.btnAutoAdjust.TabIndex = 7;
-            this.btnAutoAdjust.Text = "Auto Ajustar";
-            this.toolTip1.SetToolTip(this.btnAutoAdjust, "Exporta las líneas a un fichero .xlsx");
+            this.btnAutoAdjust.Text = "Ordinamento automatico";
+            this.toolTip1.SetToolTip(this.btnAutoAdjust, "Esporta le righe come file .xlsx");
             this.btnAutoAdjust.UseVisualStyleBackColor = true;
             this.btnAutoAdjust.Click += new System.EventHandler(this.btnAutoAdjust_Click);
             // 
@@ -169,7 +167,7 @@ namespace TFGame.TheMissing.Files.Txt
             this.Controls.Add(this.dockPanel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "GridView";
-            this.Text = "Subtítulos";
+            this.Text = "Sottotitoli";
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             this.splitContainer1.Panel2.PerformLayout();

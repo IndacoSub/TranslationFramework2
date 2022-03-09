@@ -160,7 +160,7 @@
     <value>24, 22</value>
   </data>
   <data name="tsbNewFile.Text" xml:space="preserve">
-    <value>&amp;Nuevo</value>
+    <value>&amp;Nuovo</value>
   </data>
   <data name="tsbOpenFile.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
@@ -169,7 +169,7 @@
     <value>24, 22</value>
   </data>
   <data name="tsbOpenFile.Text" xml:space="preserve">
-    <value>&amp;Abrir</value>
+    <value>&amp;Apri</value>
   </data>
   <data name="tsbSaveFile.Enabled" type="System.Boolean, mscorlib">
     <value>False</value>
@@ -181,7 +181,7 @@
     <value>24, 22</value>
   </data>
   <data name="tsbSaveFile.Text" xml:space="preserve">
-    <value>&amp;Guardar</value>
+    <value>&amp;Salva</value>
   </data>
   <data name="tsbExportProject.Enabled" type="System.Boolean, mscorlib">
     <value>False</value>
@@ -193,7 +193,7 @@
     <value>24, 22</value>
   </data>
   <data name="tsbExportProject.Text" xml:space="preserve">
-    <value>&amp;Exportar</value>
+    <value>&amp;Esporta</value>
   </data>
   <data name="tsbSearch.Enabled" type="System.Boolean, mscorlib">
     <value>False</value>
@@ -205,10 +205,10 @@
     <value>24, 22</value>
   </data>
   <data name="tsbSearch.Text" xml:space="preserve">
-    <value>Buscar</value>
+    <value>Cerca</value>
   </data>
   <data name="tsbSearch.ToolTipText" xml:space="preserve">
-    <value>&amp;Buscar</value>
+    <value>&amp;Cerca</value>
   </data>
   <data name="tsbSearchInFiles.Enabled" type="System.Boolean, mscorlib">
     <value>False</value>

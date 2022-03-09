@@ -68,7 +68,7 @@ namespace DDSViewer
                 }
                 else
                 {
-                    MessageBox.Show("No hay ficheros .dds");
+                    MessageBox.Show("Non sono stati trovati file .dds");
                     Close();
                 }
             }
@@ -134,7 +134,7 @@ namespace DDSViewer
                 _index++;
                 if (_index == _images.Count)
                 {
-                    MessageBox.Show("Finalizado");
+                    MessageBox.Show("Fatto");
                     Close();
                 }
                 else
