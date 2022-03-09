@@ -157,9 +157,11 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Forms\SearchTextForm.resx">
       <DependentUpon>SearchTextForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\SearchInFilesForm.resx">
       <DependentUpon>SearchInFilesForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\SearchResultsForm.resx">
       <DependentUpon>SearchResultsForm.cs</DependentUpon>
@@ -173,6 +175,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\NewProjectSettings.resx">
       <DependentUpon>NewProjectSettings.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\WorkingForm.resx">
       <DependentUpon>WorkingForm.cs</DependentUpon>

@@ -66,7 +66,7 @@ namespace TF.GUI.Forms
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(75, 23);
             this.btnOK.TabIndex = 10;
-            this.btnOK.Text = "Aceptar";
+            this.btnOK.Text = "OK";
             this.btnOK.UseVisualStyleBackColor = true;
             // 
             // btnCancel
@@ -78,7 +78,7 @@ namespace TF.GUI.Forms
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 23);
             this.btnCancel.TabIndex = 9;
-            this.btnCancel.Text = "Cancelar";
+            this.btnCancel.Text = "Annulla";
             this.btnCancel.UseVisualStyleBackColor = true;
             // 
             // gbExportItems
