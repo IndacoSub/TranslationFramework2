@@ -50,7 +50,9 @@ namespace TF.GUI
                 var files = Directory.GetFiles(workFolder);
                 var directories = Directory.GetDirectories(workFolder);
 
-                if (files.Length + directories.Length > 0)
+                const bool force_empty = false;
+
+                if (force_empty && files.Length + directories.Length > 0)
                 {
 #if DEBUG
                     PathHelper.DeleteDirectory(workFolder);
