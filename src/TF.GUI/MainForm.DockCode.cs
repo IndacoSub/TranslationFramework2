@@ -102,8 +102,8 @@ namespace TF.GUI
             {
                 var result =
                     MessageBox.Show(
-                        "Esto restaurará el fichero original. Esta operación no se puede deshacer.\n¿Quieres continuar?",
-                        "Restaurar ficheros", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                        "Questo ripristinerà il file originale.\nNon si può recuperare un file ripristinato.",
+                        "Ripristinare il file?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
                 if (result == DialogResult.Yes)
                 {
@@ -139,8 +139,8 @@ namespace TF.GUI
             {
                 if (_currentFile.NeedSaving)
                 {
-                    var result = MessageBox.Show("Hay cambios pendientes en el fichero.\n¿Quieres guardarlos?",
-                        "Guardar cambios", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+                    var result = MessageBox.Show("Ci sono cambiamenti non salvati nel file.\nDesideri salvare?",
+                        "Cambiamenti ambigui", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
 
                     if (result == DialogResult.Cancel)
                     {

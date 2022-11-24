@@ -50,7 +50,7 @@ namespace TF.GUI
                 var files = Directory.GetFiles(workFolder);
                 var directories = Directory.GetDirectories(workFolder);
 
-                const bool force_empty = false;
+                const bool force_empty = true;
 
                 if (force_empty && files.Length + directories.Length > 0)
                 {
