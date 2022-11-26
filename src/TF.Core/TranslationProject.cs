@@ -21,6 +21,7 @@ using WeifenLuo.WinFormsUI.Docking;
 using System.Text.RegularExpressions;
 using TF.Core.Files;
 using TF.Core.Views;
+using System.Diagnostics;
 
 namespace TF.Core
 {
@@ -697,7 +698,93 @@ namespace TF.Core
             }
         }
 
-        public void ImportImages(string path, BackgroundWorker worker)
+		public void ImportExcel(string path, BackgroundWorker worker, bool offset)
+		{
+
+			// Attribution/credit goes to @linkmadao (GitHub)
+			// https://github.com/linkmadao/TranslationFramework2/commit/0a345928a8ac69f26caf48c478449e298b038e03
+			// https://github.com/Kaplas80/TranslationFramework2/pull/44
+
+			var arquivosProcessados = 0;
+
+			foreach (TranslationFileContainer container in FileContainers)
+			{
+				var porcentagem = (arquivosProcessados * 100) / FileContainers.Count;
+
+				if (worker.CancellationPending)
+				{
+					worker.ReportProgress(porcentagem, "CANCELADO");
+					throw new UserCancelException();
+				}
+
+				worker.ReportProgress(porcentagem, $"Procesando {container.Path}...");
+
+				foreach (TranslationFile file in container.Files)
+				{
+					string filePath = Path.Combine(path, container.Path, file.RelativePath);
+					string fileName = Path.GetFileNameWithoutExtension(filePath);
+					string inputPath = string.Concat(@"\\?\", Path.GetFullPath(Path.Combine(Path.GetDirectoryName(filePath), string.Concat(fileName, ".xlsx"))));
+
+					if (!File.Exists(inputPath))
+					{
+						filePath = Path.Combine(path, file.RelativePath);
+						inputPath = string.Concat(@"\\?\", Path.GetFullPath(Path.Combine(Path.GetDirectoryName(filePath), string.Concat(fileName, ".xlsx"))));
+					}
+
+					if (File.Exists(inputPath))
+					{
+						//Debug.WriteLine("Importo il file XLSX: " + inputPath);
+						file.ImportExcel(inputPath, worker, porcentagem, true, offset);
+					}
+					else
+					{
+						// Comprobamos si el fichero está partido
+						string directory = string.Concat(@"\\?\", Path.GetFullPath(Path.GetDirectoryName(Path.Combine(path, container.Path, file.RelativePath))));
+						if (Directory.Exists(directory))
+						{
+							string[] files = Directory.GetFiles(directory,
+								string.Concat(fileName, ".xlsx"), SearchOption.AllDirectories);
+
+							if (files.Length > 0)
+							{
+								foreach (string s in files)
+								{
+									//Debug.WriteLine("Importo il file XLSX: " + s);
+									file.ImportExcel(s, worker, porcentagem, true, offset);
+								}
+							} else
+                            {
+                                //Debug.WriteLine("Nessun XLSX trovato nella directory! " + directory);
+                            }
+						} else
+                        {
+                            //Debug.WriteLine("La directory non esiste: " + directory);
+
+							directory = string.Concat(@"\\?\", Path.GetFullPath(path));
+							string[] files = Directory.GetFiles(directory,
+								string.Concat(fileName, ".xlsx"), SearchOption.AllDirectories);
+
+							if (files.Length > 0)
+							{
+								foreach (string s in files)
+								{
+									//Debug.WriteLine("Importo il file XLSX: " + s);
+									file.ImportExcel(s, worker, porcentagem, true, offset);
+								}
+							}
+							else
+							{
+								//Debug.WriteLine("Nessun XLSX trovato nella directory! " + directory);
+							}
+						}
+					}
+				}
+
+				arquivosProcessados += 1;
+			}
+		}
+
+		public void ImportImages(string path, BackgroundWorker worker)
         {
             foreach (TranslationFileContainer container in FileContainers)
             {

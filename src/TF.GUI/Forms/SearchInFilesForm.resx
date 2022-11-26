@@ -181,7 +181,7 @@
     <value>5</value>
   </data>
   <data name="label1.Text" xml:space="preserve">
-    <value>Texto da cercare:</value>
+    <value>Testo da cercare:</value>
   </data>
   <data name="&gt;&gt;label1.Name" xml:space="preserve">
     <value>label1</value>
@@ -208,7 +208,7 @@
     <value>6</value>
   </data>
   <data name="label2.Text" xml:space="preserve">
-    <value>ATENCIÓN: La búsqueda es sensible a mayúsculas y minúsculas</value>
+    <value>ATTENZIONE: maiuscole e minuscole sono caratteri distinti</value>
   </data>
   <data name="&gt;&gt;label2.Name" xml:space="preserve">
     <value>label2</value>

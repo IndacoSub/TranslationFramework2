@@ -625,13 +625,139 @@ namespace TF.GUI
 
         private void ImportTextsXlsxSimple()
         {
+			if (_project != null)
+			{
+				if (_currentFile != null)
+				{
+					if (_currentFile.NeedSaving)
+					{
+						var result = MessageBox.Show(
+							"E' necessario salvare i cambiamenti prima di continuare.\nDesideri salvarli?",
+							"Salva cambiamenti", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
-        }
+						if (result == DialogResult.No)
+						{
+							return;
+						}
+
+						if (result == DialogResult.Yes)
+						{
+							_currentFile.SaveChanges();
+						}
+					}
+				}
+
+				FolderBrowserDialog.Description = "Seleziona la cartella root contenente i file XLSX";
+				FolderBrowserDialog.ShowNewFolderButton = false;
+
+				var formResult = FolderBrowserDialog.ShowDialog(this);
+
+				if (formResult == DialogResult.Cancel)
+				{
+					return;
+				}
+
+				var openFile = _currentFile;
+				ExplorerOnFileChanged(null);
+
+				var workForm = new WorkingForm(dockTheme, "Importa XLSX");
+
+				workForm.DoWork += (sender, args) =>
+				{
+					var worker = sender as BackgroundWorker;
+
+					try
+					{
+						_project.ImportExcel(FolderBrowserDialog.SelectedPath, worker, false);
+
+						worker.ReportProgress(-1, "FINE");
+						worker.ReportProgress(-1, string.Empty);
+					}
+					catch (UserCancelException)
+					{
+						args.Cancel = true;
+					}
+#if !DEBUG
+                    catch (Exception e)
+                    {
+                        worker.ReportProgress(0, $"ERRORE: {e.Message}");
+                    }
+#endif
+				};
+
+				workForm.ShowDialog(this);
+
+				ExplorerOnFileChanged(openFile);
+			}
+		}
 
         private void ImportTextsXlsxOffset()
         {
+			if (_project != null)
+			{
+				if (_currentFile != null)
+				{
+					if (_currentFile.NeedSaving)
+					{
+						var result = MessageBox.Show(
+							"E' necessario salvare i cambiamenti prima di continuare.\nDesideri salvarli?",
+							"Salva cambiamenti", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
-        }
+						if (result == DialogResult.No)
+						{
+							return;
+						}
+
+						if (result == DialogResult.Yes)
+						{
+							_currentFile.SaveChanges();
+						}
+					}
+				}
+
+				FolderBrowserDialog.Description = "Seleziona la cartella root contenente i file XLSX";
+				FolderBrowserDialog.ShowNewFolderButton = false;
+
+				var formResult = FolderBrowserDialog.ShowDialog(this);
+
+				if (formResult == DialogResult.Cancel)
+				{
+					return;
+				}
+
+				var openFile = _currentFile;
+				ExplorerOnFileChanged(null);
+
+				var workForm = new WorkingForm(dockTheme, "Importa XLSX (Offset)");
+
+				workForm.DoWork += (sender, args) =>
+				{
+					var worker = sender as BackgroundWorker;
+
+					try
+					{
+						_project.ImportExcel(FolderBrowserDialog.SelectedPath, worker, true);
+
+						worker.ReportProgress(-1, "FINE");
+						worker.ReportProgress(-1, string.Empty);
+					}
+					catch (UserCancelException)
+					{
+						args.Cancel = true;
+					}
+#if !DEBUG
+                    catch (Exception e)
+                    {
+                        worker.ReportProgress(0, $"ERRORE: {e.Message}");
+                    }
+#endif
+				};
+
+				workForm.ShowDialog(this);
+
+				ExplorerOnFileChanged(openFile);
+			}
+		}
 
         private void ImportImages()
         {
