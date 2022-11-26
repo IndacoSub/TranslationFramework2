@@ -12,7 +12,7 @@ namespace TFGame.Yakuza0.Files.Snitch
         {
         }
 
-        protected override IList<Subtitle> GetSubtitles()
+		public override IList<Subtitle> GetSubtitles()
         {
             var result = new List<Subtitle>();
 

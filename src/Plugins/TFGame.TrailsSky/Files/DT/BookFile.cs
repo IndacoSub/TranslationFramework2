@@ -27,7 +27,7 @@ namespace TFGame.TrailsSky.Files.DT
             _view.Show(panel, DockState.Document);
         }
 
-        protected override IList<Subtitle> GetSubtitles()
+		public override IList<Subtitle> GetSubtitles()
         {
             var result = new List<Subtitle>();
 

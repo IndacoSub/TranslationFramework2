@@ -64,6 +64,7 @@ namespace TF.GUI
 			this.mniBulkTextsImportPo = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniBulkTextsExportXlsx = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniBulkTextsImportXlsx = new System.Windows.Forms.ToolStripMenuItem();
+			this.mniBulkTextsImportXlsxOffset = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniBulkImages = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniBulkImagesExport = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniBulkImagesImport = new System.Windows.Forms.ToolStripMenuItem();
@@ -284,7 +285,8 @@ namespace TF.GUI
             this.mniBulkTextsExportPo,
             this.mniBulkTextsImportPo,
             this.mniBulkTextsExportXlsx,
-            this.mniBulkTextsImportXlsx});
+            this.mniBulkTextsImportXlsx,
+            this.mniBulkTextsImportXlsxOffset});
 			this.mniBulkTexts.Name = "mniBulkTexts";
 			resources.ApplyResources(this.mniBulkTexts, "mniBulkTexts");
 			// 
@@ -311,6 +313,12 @@ namespace TF.GUI
 			resources.ApplyResources(this.mniBulkTextsImportXlsx, "mniBulkTextsImportXlsx");
 			this.mniBulkTextsImportXlsx.Name = "mniBulkTextsImportXlsx";
 			this.mniBulkTextsImportXlsx.Click += new System.EventHandler(this.mniBulkTextsImportXlsx_Click);
+			// 
+			// mniBulkTextsImportXlsxOffset
+			// 
+			resources.ApplyResources(this.mniBulkTextsImportXlsxOffset, "mniBulkTextsImportXlsxOffset");
+			this.mniBulkTextsImportXlsxOffset.Name = "mniBulkTextsImportXlsxOffset";
+			this.mniBulkTextsImportXlsxOffset.Click += new System.EventHandler(this.mniBulkTextsImportXlsxOffset_Click);
 			// 
 			// mniBulkImages
 			// 
@@ -395,6 +403,7 @@ namespace TF.GUI
         private System.Windows.Forms.ToolStripMenuItem mniBulkImagesImport;
 		private System.Windows.Forms.ToolStripMenuItem mniBulkTextsExportXlsx;
 		private System.Windows.Forms.ToolStripMenuItem mniBulkTextsImportXlsx;
+		private System.Windows.Forms.ToolStripMenuItem mniBulkTextsImportXlsxOffset;
 	}
 }
 

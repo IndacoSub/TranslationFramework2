@@ -122,7 +122,8 @@ namespace TF.GUI
             mniBulkImagesImport.Enabled = true;
             mniBulkTextsExportXlsx.Enabled = true;
             mniBulkTextsImportXlsx.Enabled = true;
-        }
+			mniBulkTextsImportXlsxOffset.Enabled = true;
+		}
 
         private void LoadTranslation()
         {
@@ -184,6 +185,7 @@ namespace TF.GUI
                 mniBulkImagesImport.Enabled = true;
                 mniBulkTextsExportXlsx.Enabled = true;
                 mniBulkTextsImportXlsx.Enabled = true;
+				mniBulkTextsImportXlsxOffset.Enabled = true;
 
 			}
         }
@@ -552,6 +554,83 @@ namespace TF.GUI
 
                 ExplorerOnFileChanged(openFile);
             }
+        }
+
+        private void ExportTextsXlsx()
+        {
+			if (_project != null)
+			{
+				if (_currentFile != null)
+				{
+					if (_currentFile.NeedSaving)
+					{
+						var result = MessageBox.Show(
+							"E' necessario salvare i cambiamenti prima di continuare.\nDesideri salvarli?",
+							"Salva cambiamenti", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+						if (result == DialogResult.No)
+						{
+							return;
+						}
+
+						if (result == DialogResult.Yes)
+						{
+							_currentFile.SaveChanges();
+						}
+					}
+				}
+
+				FolderBrowserDialog.Description = "Seleziona la cartella dove desideri salvere i/il file Po";
+				FolderBrowserDialog.ShowNewFolderButton = true;
+
+				var formResult = FolderBrowserDialog.ShowDialog(this);
+
+				if (formResult == DialogResult.Cancel)
+				{
+					return;
+				}
+
+				var workForm = new WorkingForm(dockTheme, "Esporta file Xlsx");
+
+				workForm.DoWork += (sender, args) =>
+				{
+					var worker = sender as BackgroundWorker;
+
+#if !DEBUG
+					try
+					{
+#endif
+                        _project.ExportXlsx(FolderBrowserDialog.SelectedPath, worker);
+
+						worker.ReportProgress(-1, "FINE");
+						worker.ReportProgress(-1, string.Empty);
+						worker.ReportProgress(-1, $"Puoi trovare i file esportati nella cartella: {FolderBrowserDialog.SelectedPath}");
+#if !DEBUG
+					}
+					catch (UserCancelException e)
+					{
+						args.Cancel = true;
+					}
+
+					catch (Exception e)
+					{
+						worker.ReportProgress(0, $"ERRORE: {e.Message}");
+					}
+#endif
+				};
+
+				workForm.ShowDialog(this);
+			}
+		}
+
+        private void ImportTextsXlsxSimple()
+        {
+
+        }
+
+        private void ImportTextsXlsxOffset()
+        {
+
         }
 
         private void ImportImages()

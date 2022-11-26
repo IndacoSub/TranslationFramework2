@@ -13,7 +13,7 @@ namespace TFGame.PhoenixWrightTrilogy.Files.MultiLine
         {
         }
 
-        protected override IList<Subtitle> GetSubtitles()
+		public override IList<Subtitle> GetSubtitles()
         {
             var result = new List<Subtitle>();
             var encryptedData = System.IO.File.ReadAllBytes(Path);

@@ -25,7 +25,7 @@ namespace TFGame.AITheSomniumFiles.Files.LuaText
             _view.Show(panel, DockState.Document);
         }
 
-        protected override IList<Subtitle> GetSubtitles()
+        public override IList<Subtitle> GetSubtitles()
         {
             var tempFile = System.IO.Path.GetTempFileName();
             

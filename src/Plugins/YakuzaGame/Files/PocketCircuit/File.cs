@@ -13,7 +13,7 @@ namespace YakuzaGame.Files.PocketCircuit
         {
         }
 
-        protected override IList<Subtitle> GetSubtitles()
+		public override IList<Subtitle> GetSubtitles()
         {
             IList<Subtitle> result;
 

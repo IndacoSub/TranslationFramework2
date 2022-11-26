@@ -382,7 +382,7 @@
     <value>False</value>
   </data>
   <data name="mniBulkTextsExportPo.Size" type="System.Drawing.Size, System.Drawing">
-    <value>180, 22</value>
+    <value>193, 22</value>
   </data>
   <data name="mniBulkTextsExportPo.Text" xml:space="preserve">
     <value>Esporta (*.po)</value>
@@ -391,7 +391,7 @@
     <value>False</value>
   </data>
   <data name="mniBulkTextsImportPo.Size" type="System.Drawing.Size, System.Drawing">
-    <value>180, 22</value>
+    <value>193, 22</value>
   </data>
   <data name="mniBulkTextsImportPo.Text" xml:space="preserve">
     <value>Importa (*.po)</value>
@@ -400,7 +400,7 @@
     <value>False</value>
   </data>
   <data name="mniBulkTextsExportXlsx.Size" type="System.Drawing.Size, System.Drawing">
-    <value>180, 22</value>
+    <value>193, 22</value>
   </data>
   <data name="mniBulkTextsExportXlsx.Text" xml:space="preserve">
     <value>Esporta (*.xlsx)</value>
@@ -409,10 +409,19 @@
     <value>False</value>
   </data>
   <data name="mniBulkTextsImportXlsx.Size" type="System.Drawing.Size, System.Drawing">
-    <value>180, 22</value>
+    <value>193, 22</value>
   </data>
   <data name="mniBulkTextsImportXlsx.Text" xml:space="preserve">
     <value>Importa (*.xlsx)</value>
+  </data>
+  <data name="mniBulkTextsImportXlsxOffset.Enabled" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="mniBulkTextsImportXlsxOffset.Size" type="System.Drawing.Size, System.Drawing">
+    <value>193, 22</value>
+  </data>
+  <data name="mniBulkTextsImportXlsxOffset.Text" xml:space="preserve">
+    <value>Importa (*.xlsx, Offset)</value>
   </data>
   <data name="mniBulkTexts.Size" type="System.Drawing.Size, System.Drawing">
     <value>180, 22</value>
@@ -676,6 +685,12 @@
     <value>mniBulkTextsImportXlsx</value>
   </data>
   <data name="&gt;&gt;mniBulkTextsImportXlsx.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;mniBulkTextsImportXlsxOffset.Name" xml:space="preserve">
+    <value>mniBulkTextsImportXlsxOffset</value>
+  </data>
+  <data name="&gt;&gt;mniBulkTextsImportXlsxOffset.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;mniBulkImages.Name" xml:space="preserve">

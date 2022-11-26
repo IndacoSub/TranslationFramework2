@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DocumentFormat.OpenXml.Wordprocessing;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -8,11 +9,18 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Drawing;
 using TF.Core.Entities;
 using TF.Core.Exceptions;
 using TF.Core.Helpers;
 using TF.Core.POCO;
+using TF.Core.TranslationEntities;
 using TF.IO;
+using WeifenLuo.WinFormsUI.Docking;
+using System.Text.RegularExpressions;
+using TF.Core.Files;
+using TF.Core.Views;
 
 namespace TF.Core
 {
@@ -570,6 +578,47 @@ namespace TF.Core
             }
         }
 
+        public void ExportXlsx(string path, BackgroundWorker worker)
+        {
+            foreach (TranslationFileContainer container in FileContainers)
+            {
+				if (worker.CancellationPending)
+				{
+					worker.ReportProgress(0, "ANNULLATO");
+                    throw new UserCancelException();
+                }
+
+				
+
+				foreach (TranslationFile file in container.Files)
+				{
+					string filePath = Path.Combine(path, container.Path, file.RelativePath);
+					string fileName = Path.GetFileNameWithoutExtension(filePath);
+					string outputPath = string.Concat(@"\\?\", Path.GetFullPath(Path.Combine(Path.GetDirectoryName(filePath), string.Concat(fileName, ".xlsx"))));
+
+                    if(fileName.Contains(".tex"))
+                    {
+                        continue;
+                    }
+
+                    if(!filePath.Contains("luabytecode"))
+                    {
+                        continue;
+                    }
+
+                    worker.ReportProgress(-1, "Nome: " + fileName);
+
+                    // TODO
+                    var btf = (BinaryTextFile)file;
+                    btf._view = new GridView(btf);
+					btf._subtitles = btf.GetSubtitles();
+					btf._view.LoadData(btf._subtitles.Where(x => !string.IsNullOrEmpty(x.Text)).ToList());
+
+                    btf._view.ExportExcel();
+				}
+			}
+        }
+
         public void ImportPoFromDirectory(string directory, string fileName, TranslationFile file, BackgroundWorker worker)
         {
             string newFilename = string.Concat(fileName, ".po");
@@ -612,9 +661,14 @@ namespace TF.Core
                     if(fileName.Contains(".tex"))
                     {
                         continue;
-                    }
+					}
 
-                    if (!File.Exists(inputPath))
+					if (fileName.Contains(".ttf"))
+					{
+						continue;
+					}
+
+					if (!File.Exists(inputPath))
                     {
                         filePath = Path.Combine(path, file.RelativePath);
                         inputPath = string.Concat(@"\\?\", Path.GetFullPath(Path.Combine(Path.GetDirectoryName(filePath), string.Concat(fileName, ".po"))));

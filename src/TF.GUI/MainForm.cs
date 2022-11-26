@@ -153,12 +153,17 @@ namespace TF.GUI
 
 		private void mniBulkTextsExportXlsx_Click(object sender, EventArgs e)
 		{
-
+            ExportTextsXlsx();
 		}
 
 		private void mniBulkTextsImportXlsx_Click(object sender, EventArgs e)
 		{
+            ImportTextsXlsxSimple();
+		}
 
+		private void mniBulkTextsImportXlsxOffset_Click(object sender, EventArgs e)
+		{
+            ImportTextsXlsxOffset();
 		}
 	}
 }

@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Permissions;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Windows.Forms;
 using ExcelDataReader;
 using OfficeOpenXml;
@@ -220,51 +221,73 @@ namespace TF.Core.Views
             e.Handled = true;
         }
 
-        protected virtual void btnExport_Click(object sender, EventArgs e)
+		public void ExportExcel()
         {
-            ExportFileDialog.Filter = "File Excel|*.xlsx";
-            ExportFileDialog.FileName = string.Concat(Path.GetFileNameWithoutExtension(_file.Path), ".xlsx");
-            var result = ExportFileDialog.ShowDialog(this);
+			Thread t = new Thread((ThreadStart)(() => {
+				ExportFileDialog.Filter = "File Excel|*.xlsx";
+				ExportFileDialog.FileName = string.Concat(Path.GetFileNameWithoutExtension(_file.Path), ".xlsx");
+				var result = ExportFileDialog.ShowDialog();
 
-            if (result != DialogResult.OK)
-            {
-                return;
-            }
+				if (result != DialogResult.OK)
+				{
+					return;
+				}
 
-            using (var excel = new ExcelPackage())
-            {
-                var sheet = excel.Workbook.Worksheets.Add("Hoja 1");
+				using (var excel = new ExcelPackage())
+				{
+					var sheet = excel.Workbook.Worksheets.Add("Hoja 1");
 
-                var header = new List<string[]>
-                {
-                    new[] {"OFFSET", "ORIGINAL", "TRADUCCIÓN"}
-                };
+					var header = new List<string[]>
+				{
+					new[] {"OFFSET", "ORIGINAL", "TRADUCCIÓN"}
+				};
 
-                sheet.Cells["A1:C1"].LoadFromArrays(header);
+					sheet.Cells["A1:C1"].LoadFromArrays(header);
 
-                var row = 2;
-                foreach (var subtitle in _subtitles)
-                {
-                    sheet.Cells[row, 1].Value = subtitle.Offset;
-                    sheet.Cells[row, 2].Value = subtitle.Text;
-                    sheet.Cells[row, 3].Value = subtitle.Translation;
+					var row = 2;
+					foreach (var subtitle in _subtitles)
+					{
+						sheet.Cells[row, 1].Value = subtitle.Offset;
+						sheet.Cells[row, 2].Value = subtitle.Text;
+						sheet.Cells[row, 3].Value = subtitle.Translation;
 
-                    row++;
-                }
+						row++;
+					}
 
-                var excelFile = new FileInfo(ExportFileDialog.FileName);
-                excel.SaveAs(excelFile);
-            }
-        }
+					var excelFile = new FileInfo(ExportFileDialog.FileName);
+					excel.SaveAs(excelFile);
+				}
+			}));
 
-        private void btnOffsetImport_Click(object sender, EventArgs e)
+			// Run your code from a thread that joins the STA Thread
+			t.SetApartmentState(ApartmentState.STA);
+			t.Start();
+			t.Join();
+		}
+
+        public void ImportExcelOffset()
         {
             Import(true);
         }
 
+        public void ImportExcelSimple()
+        {
+			Import(false);
+		}
+
+        protected virtual void btnExport_Click(object sender, EventArgs e)
+        {
+            ExportExcel();
+        }
+
+        private void btnOffsetImport_Click(object sender, EventArgs e)
+        {
+            ImportExcelOffset();
+        }
+
         private void btnSimpleImport_Click(object sender, EventArgs e)
         {
-            Import(false);
+            ImportExcelSimple();
         }
 
         protected virtual void Import(bool useOffset)
@@ -422,37 +445,47 @@ namespace TF.Core.Views
             }
         }
 
+        public void ExportPo()
+        {
+			ExportFileDialog.Filter = "File Po|*.po";
+			ExportFileDialog.FileName = string.Concat(Path.GetFileNameWithoutExtension(_file.Path), ".po");
+			var result = ExportFileDialog.ShowDialog(this);
+
+			if (result != DialogResult.OK)
+			{
+				return;
+			}
+
+			_file.ExportPo(ExportFileDialog.FileName);
+		}
+
+        public void ImportPo()
+        {
+			ImportFileDialog.Filter = "File Po|*.po";
+			ImportFileDialog.FileName = string.Concat(Path.GetFileNameWithoutExtension(_file.Path), ".po");
+			var result = ImportFileDialog.ShowDialog(this);
+
+			if (result != DialogResult.OK)
+			{
+				return;
+			}
+
+			_file.ImportPo(ImportFileDialog.FileName, false, false);
+
+			_selectedSubtitle = null;
+			SubtitleGridView.Invalidate();
+			DisplaySubtitle(_selectedSubtitleIndex);
+			UpdateLabel();
+		}
+
         private void btnExportPo_Click(object sender, EventArgs e)
         {
-            ExportFileDialog.Filter = "File Po|*.po";
-            ExportFileDialog.FileName = string.Concat(Path.GetFileNameWithoutExtension(_file.Path), ".po");
-            var result = ExportFileDialog.ShowDialog(this);
-
-            if (result != DialogResult.OK)
-            {
-                return;
-            }
-
-            _file.ExportPo(ExportFileDialog.FileName);
+            ExportPo();
         }
 
         private void btnImportPo_Click(object sender, EventArgs e)
         {
-            ImportFileDialog.Filter = "File Po|*.po";
-            ImportFileDialog.FileName = string.Concat(Path.GetFileNameWithoutExtension(_file.Path), ".po");
-            var result = ImportFileDialog.ShowDialog(this);
-
-            if (result != DialogResult.OK)
-            {
-                return;
-            }
-
-            _file.ImportPo(ImportFileDialog.FileName, false, false);
-
-            _selectedSubtitle = null;
-            SubtitleGridView.Invalidate();
-            DisplaySubtitle(_selectedSubtitleIndex);
-            UpdateLabel();
+            ImportPo();
         }
     }
 }

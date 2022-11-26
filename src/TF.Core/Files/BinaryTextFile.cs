@@ -20,11 +20,11 @@ namespace TF.Core.Files
 
     public class BinaryTextFile : TranslationFile
     {
-        protected virtual int StartOffset => 0;
+        public virtual int StartOffset => 0;
 
-        protected IList<Subtitle> _subtitles;
+        public IList<Subtitle> _subtitles;
 
-        protected GridView _view;
+        public GridView _view;
 
         public override int SubtitleCount
         {
@@ -49,7 +49,7 @@ namespace TF.Core.Files
             _view.Show(panel, DockState.Document);
         }
 
-        protected virtual IList<Subtitle> GetSubtitles()
+        public virtual IList<Subtitle> GetSubtitles()
         {
             var result = new List<Subtitle>();
 
