@@ -116,10 +116,12 @@ namespace TF.GUI
             tsbSearchInFiles.Enabled = true;
             mniEditSearchInFiles.Enabled = true;
 
-            mniBulkTextsExport.Enabled = true;
-            mniBulkTextsImport.Enabled = true;
+            mniBulkTextsExportPo.Enabled = true;
+            mniBulkTextsImportPo.Enabled = true;
             mniBulkImagesExport.Enabled = true;
             mniBulkImagesImport.Enabled = true;
+            mniBulkTextsExportXlsx.Enabled = true;
+            mniBulkTextsImportXlsx.Enabled = true;
         }
 
         private void LoadTranslation()
@@ -176,11 +178,14 @@ namespace TF.GUI
                 tsbSearchInFiles.Enabled = true;
                 mniEditSearchInFiles.Enabled = true;
 
-                mniBulkTextsExport.Enabled = true;
-                mniBulkTextsImport.Enabled = true;
+                mniBulkTextsExportPo.Enabled = true;
+                mniBulkTextsImportPo.Enabled = true;
                 mniBulkImagesExport.Enabled = true;
                 mniBulkImagesImport.Enabled = true;
-            }
+                mniBulkTextsExportXlsx.Enabled = true;
+                mniBulkTextsImportXlsx.Enabled = true;
+
+			}
         }
 
         private void SaveChanges()
@@ -616,5 +621,5 @@ namespace TF.GUI
                 ExplorerOnFileChanged(openFile);
             }
         }
-    }
+	}
 }

@@ -569,6 +569,27 @@ namespace TF.Core
                 }
             }
         }
+
+        public void ImportPoFromDirectory(string directory, string fileName, TranslationFile file, BackgroundWorker worker)
+        {
+            string newFilename = string.Concat(fileName, ".po");
+			string[] files = Directory.GetFiles(directory,
+								newFilename, SearchOption.AllDirectories);
+
+			if (files.Length > 0)
+			{
+                worker.ReportProgress(-1, "ATTENZIONE: " + files.Length.ToString() + " File trovati!");
+				foreach (string s in files)
+				{
+                    worker.ReportProgress(-1, "File trovato: " + files[files.Length - 1].ToString());
+					file.ImportPo(s);
+				}
+			}
+			else
+			{
+				//worker.ReportProgress(-1, "ERRORE: Nessun file trovato in: " + directory + " chiamato " + newFilename);
+			}
+		}
         
         public void ImportPo(string path, BackgroundWorker worker)
         {
@@ -588,6 +609,11 @@ namespace TF.Core
                     string fileName = Path.GetFileNameWithoutExtension(filePath);
                     string inputPath = string.Concat(@"\\?\", Path.GetFullPath(Path.Combine(Path.GetDirectoryName(filePath), string.Concat(fileName, ".po"))));
 
+                    if(fileName.Contains(".tex"))
+                    {
+                        continue;
+                    }
+
                     if (!File.Exists(inputPath))
                     {
                         filePath = Path.Combine(path, file.RelativePath);
@@ -604,17 +630,14 @@ namespace TF.Core
                         string directory = string.Concat(@"\\?\", Path.GetFullPath(Path.GetDirectoryName(Path.Combine(path, container.Path, file.RelativePath))));
                         if (Directory.Exists(directory))
                         {
-                            string[] files = Directory.GetFiles(directory,
-                                string.Concat(fileName, ".*.po"));
+                            ImportPoFromDirectory(directory, fileName, file, worker);
+                        } else
+                        {
+							//worker.ReportProgress(-1, "ERRORE: La directory " + directory + " non esiste!");
 
-                            if (files.Length > 0)
-                            {
-                                foreach (string s in files)
-                                {
-                                    file.ImportPo(s);
-                                }
-                            }
-                        }
+                            directory = string.Concat(@"\\?\", Path.GetFullPath(path));
+							ImportPoFromDirectory(directory, fileName, file, worker);
+						}
                     }
                 }
             }

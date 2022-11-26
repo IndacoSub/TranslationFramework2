@@ -198,5 +198,5 @@ namespace TF.GUI
                 Settings.Default.WindowLayout = Encoding.UTF8.GetString(buff);
             }
         }
-    }
+	}
 }
