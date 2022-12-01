@@ -160,7 +160,9 @@ namespace TF.Core.Files
                 Header = new PoHeader(GameName, "dummy@dummy.com", "es-ES")
             };
 
-            var entry = new PoEntry();
+			po.Header.CreationDate = "07/10/2021";
+
+			var entry = new PoEntry();
             var text = GetText();
             var tmp = text.Text.Replace(LineEnding.RealLineEnding, LineEnding.PoLineEnding);
             if (string.IsNullOrEmpty(tmp))

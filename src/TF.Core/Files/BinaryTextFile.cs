@@ -312,6 +312,8 @@ namespace TF.Core.Files
 				Header = new PoHeader(GameName, "dummy@dummy.com", "es-ES")
 			};
 
+			po.Header.CreationDate = "07/10/2021";
+
 			var subtitles = GetSubtitles();
 			foreach (var subtitle in subtitles)
 			{
