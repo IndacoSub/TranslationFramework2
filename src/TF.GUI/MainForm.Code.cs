@@ -122,7 +122,11 @@ namespace TF.GUI
             mniBulkImagesImport.Enabled = true;
             mniBulkTextsExportXlsx.Enabled = true;
             mniBulkTextsImportXlsx.Enabled = true;
-			mniBulkTextsImportXlsxOffset.Enabled = true;
+
+            // Disabled due to a bug
+            // where all offsets are zero,
+            // when exporting
+			mniBulkTextsImportXlsxOffset.Enabled = false;
 		}
 
         private void LoadTranslation()
