@@ -131,12 +131,12 @@ namespace TF.GUI
             }
         }
 
-        private void mniBulkTextsExport_Click(object sender, EventArgs e)
+        private void mniBulkTextsExportPo_Click(object sender, EventArgs e)
         {
             ExportTexts();
         }
 
-        private void mniBulkTextsImport_Click(object sender, EventArgs e)
+        private void mniBulkTextsImportPo_Click(object sender, EventArgs e)
         {
             ImportTexts();
         }
@@ -150,5 +150,20 @@ namespace TF.GUI
         {
             ImportImages();
         }
-    }
+
+		private void mniBulkTextsExportXlsx_Click(object sender, EventArgs e)
+		{
+            ExportTextsXlsx();
+		}
+
+		private void mniBulkTextsImportXlsx_Click(object sender, EventArgs e)
+		{
+            ImportTextsXlsxSimple();
+		}
+
+		private void mniBulkTextsImportXlsxOffset_Click(object sender, EventArgs e)
+		{
+            ImportTextsXlsxOffset();
+		}
+	}
 }

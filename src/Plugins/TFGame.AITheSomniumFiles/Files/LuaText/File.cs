@@ -1,12 +1,20 @@
-﻿using System;
+﻿using ExcelDataReader;
+using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Windows.Forms;
 using TF.Core.Files;
 using TF.Core.TranslationEntities;
 using TF.IO;
 using WeifenLuo.WinFormsUI.Docking;
+using static System.Windows.Forms.LinkLabel;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.ToolTip;
 
 namespace TFGame.AITheSomniumFiles.Files.LuaText
 {
@@ -25,7 +33,7 @@ namespace TFGame.AITheSomniumFiles.Files.LuaText
             _view.Show(panel, DockState.Document);
         }
 
-        protected override IList<Subtitle> GetSubtitles()
+        public override IList<Subtitle> GetSubtitles()
         {
             var tempFile = System.IO.Path.GetTempFileName();
             
@@ -76,7 +84,74 @@ namespace TFGame.AITheSomniumFiles.Files.LuaText
             return result;
         }
 
-        public override void SaveChanges()
+        public override void ImportExcel(string inputFile, BackgroundWorker worker, int porcentagem, bool save = true, bool offset = false)
+        {
+
+			// Attribution/credit goes to @linkmadao (GitHub)
+			// https://github.com/linkmadao/TranslationFramework2/commit/0a345928a8ac69f26caf48c478449e298b038e03
+			// https://github.com/Kaplas80/TranslationFramework2/pull/44
+
+			var strings = new Dictionary<string, string>();
+
+			try
+			{
+				LoadBeforeImport();
+
+				using (var stream = System.IO.File.Open(inputFile, FileMode.Open, FileAccess.Read))
+				{
+					// Auto-detect format, supports:
+					//  - Binary Excel files (2.0-2003 format; *.xls)
+					//  - OpenXml Excel files (2007 format; *.xlsx)
+					using (var reader = ExcelReaderFactory.CreateReader(stream))
+					{
+						var content = reader.AsDataSet();
+
+						var table = content.Tables[0];
+
+						for (var i = 0; i < table.Rows.Count; i++)
+						{
+							var key = offset ? table.Rows[i][0].ToString() : table.Rows[i][1].ToString();
+							//var key = string.Concat(table.Rows[i][0].ToString(), "|", table.Rows[i][1].ToString());
+							var value = table.Rows[i][2].ToString();
+
+							if (!string.IsNullOrEmpty(key) && !strings.ContainsKey(key))
+							{
+								strings.Add(key, value);
+							}
+						}
+					}
+				}
+
+				foreach (var subtitle in _subtitles)
+				{
+					var key = offset ? subtitle.Offset.ToString() : subtitle.Text;
+
+					if (!string.IsNullOrEmpty(key) && strings.ContainsKey(key))
+					{
+                        var values = strings[key];
+						subtitle.Translation = values;
+					}
+				}
+
+				/*
+				foreach (var column in _data.Columns)
+				{
+					column.SetUniqueValues(strings, true);
+				}
+                */
+			}
+			catch (Exception e)
+			{
+				worker.ReportProgress(porcentagem, $"Errore nel processo dell'archivio: {inputFile}" + ": " + e.Message);
+			}
+
+			if (save && NeedSaving)
+			{
+				SaveChanges();
+			}
+		}
+
+		public override void SaveChanges()
         {
             using (var fs = new FileStream(ChangesFile, FileMode.Create))
             using (var output = new ExtendedBinaryWriter(fs, System.Text.Encoding.Unicode))

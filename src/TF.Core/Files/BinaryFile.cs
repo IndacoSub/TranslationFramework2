@@ -8,7 +8,7 @@ namespace TF.Core.Files
     {
         protected BinaryView _view;
 
-        protected virtual string Filter => "Todos los ficheros (*.*)|*.*";
+        protected virtual string Filter => "Tutti i file (*.*)|*.*";
 
         public BinaryFile(string gameName, string path, string changesFolder) : base(gameName, path, changesFolder, null)
         {

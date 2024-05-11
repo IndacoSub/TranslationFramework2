@@ -59,7 +59,7 @@ namespace TF.Core.Views
             this.Controls.Add(this.dockPanel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "TextView";
-            this.Text = "Texto";
+            this.Text = "Testo";
             this.ResumeLayout(false);
 
         }

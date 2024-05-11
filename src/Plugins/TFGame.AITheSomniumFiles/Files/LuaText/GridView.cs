@@ -42,7 +42,7 @@ namespace TFGame.AITheSomniumFiles.Files
             {
                 DataPropertyName = "Text",
                 Name = "colOriginal",
-                HeaderText = "Original",
+                HeaderText = "Originale",
                 AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
                 DefaultCellStyle = new DataGridViewCellStyle {BackColor = Color.LightGray},
                 ReadOnly = true,
@@ -54,7 +54,7 @@ namespace TFGame.AITheSomniumFiles.Files
             {
                 DataPropertyName = "Translation",
                 Name = "colTranslation",
-                HeaderText = "Traducción",
+                HeaderText = "Traduzione",
                 AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
                 ReadOnly = true,
                 SortMode = DataGridViewColumnSortMode.NotSortable,

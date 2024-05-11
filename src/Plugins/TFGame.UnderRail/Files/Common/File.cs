@@ -22,7 +22,7 @@ namespace TFGame.UnderRail.Files.Common
         {
         }
 
-        protected override IList<Subtitle> GetSubtitles()
+		public override IList<Subtitle> GetSubtitles()
         {
             var tempFile = System.IO.Path.GetTempFileName();
 

@@ -100,9 +100,8 @@ namespace YakuzaGame.Files.Table
             this.btnSimpleImport.Name = "btnSimpleImport";
             this.btnSimpleImport.Size = new System.Drawing.Size(97, 23);
             this.btnSimpleImport.TabIndex = 5;
-            this.btnSimpleImport.Text = "Importar (Simple)";
-            this.toolTip1.SetToolTip(this.btnSimpleImport, "Importa la traducción de un fichero .xlsx\n\nHace coincidir las líneas por el texto" +
-        " original.");
+            this.btnSimpleImport.Text = "Importa (Semplice)";
+            this.toolTip1.SetToolTip(this.btnSimpleImport, "Importa la traduzione da un file .xlsx\n\nIl numero di righe deve essere lo stesso dell'originale.");
             this.btnSimpleImport.UseVisualStyleBackColor = true;
             this.btnSimpleImport.Click += new System.EventHandler(this.btnSimpleImport_Click);
             // 
@@ -112,9 +111,8 @@ namespace YakuzaGame.Files.Table
             this.btnColumnImport.Name = "btnColumnImport";
             this.btnColumnImport.Size = new System.Drawing.Size(97, 23);
             this.btnColumnImport.TabIndex = 4;
-            this.btnColumnImport.Text = "Importar (Ord.)";
-            this.toolTip1.SetToolTip(this.btnColumnImport, "Importa la traducción de un fichero .xlsx\r\n\r\nHace coincidir las líneas por el ord" +
-        "en dentro de la columna.");
+            this.btnColumnImport.Text = "Importa (Ord.)";
+            this.toolTip1.SetToolTip(this.btnColumnImport, "Importa la traduzione da un file .xlsx\r\n\r\nL'ordine delle righe deve corrispondere a quello nella colonna");
             this.btnColumnImport.UseVisualStyleBackColor = true;
             this.btnColumnImport.Click += new System.EventHandler(this.btnColumnImport_Click);
             // 
@@ -124,18 +122,18 @@ namespace YakuzaGame.Files.Table
             this.btnExport.Name = "btnExport";
             this.btnExport.Size = new System.Drawing.Size(97, 23);
             this.btnExport.TabIndex = 3;
-            this.btnExport.Text = "Exportar a Excel";
+            this.btnExport.Text = "Esporta su Excel";
             this.toolTip1.SetToolTip(this.btnExport, "Exporta las líneas a un fichero .xlsx");
             this.btnExport.UseVisualStyleBackColor = true;
             this.btnExport.Click += new System.EventHandler(this.btnExport_Click);
             // 
             // ExportFileDialog
             // 
-            this.ExportFileDialog.Filter = "Archivos Excel|*.xlsx";
+            this.ExportFileDialog.Filter = "File Excel|*.xlsx";
             // 
             // ImportFileDialog
             // 
-            this.ImportFileDialog.Filter = "Archivos Excel|*.xlsx";
+            this.ImportFileDialog.Filter = "File Excel|*.xlsx";
             // 
             // View
             // 

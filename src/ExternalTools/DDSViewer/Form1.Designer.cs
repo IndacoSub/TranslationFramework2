@@ -78,7 +78,7 @@
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(75, 23);
             this.button2.TabIndex = 2;
-            this.button2.Text = "Aceptar";
+            this.button2.Text = "OK";
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
@@ -88,8 +88,8 @@
             this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox1.FormattingEnabled = true;
             this.comboBox1.Items.AddRange(new object[] {
-            "Fondo transparente",
-            "Fondo negro"});
+            "Sfondo transparente",
+            "Sfondo nero"});
             this.comboBox1.Location = new System.Drawing.Point(3, 3);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(187, 21);
@@ -98,11 +98,11 @@
             // 
             // folderBrowserDialog1
             // 
-            this.folderBrowserDialog1.Description = "Selecciona la carpeta en la que buscar las imágenes";
+            this.folderBrowserDialog1.Description = "Seleziona la cartella dove vuoi cercare le immagini";
             // 
             // saveFileDialog1
             // 
-            this.saveFileDialog1.Filter = "Ficheros de texto|*.txt";
+            this.saveFileDialog1.Filter = "File di testo|*.txt";
             this.saveFileDialog1.OverwritePrompt = false;
             // 
             // Form1

@@ -54,7 +54,7 @@ namespace TF.Core.Views
             this.btnImportFile.Name = "btnImportFile";
             this.btnImportFile.Size = new System.Drawing.Size(100, 28);
             this.btnImportFile.TabIndex = 5;
-            this.btnImportFile.Text = "Importar";
+            this.btnImportFile.Text = "Importa";
             this.btnImportFile.UseVisualStyleBackColor = true;
             this.btnImportFile.Click += new System.EventHandler(this.btnImportFile_Click);
             // 
@@ -66,7 +66,7 @@ namespace TF.Core.Views
             this.btnExportFile.Name = "btnExportFile";
             this.btnExportFile.Size = new System.Drawing.Size(100, 28);
             this.btnExportFile.TabIndex = 6;
-            this.btnExportFile.Text = "Exportar";
+            this.btnExportFile.Text = "Esporta";
             this.btnExportFile.UseVisualStyleBackColor = true;
             this.btnExportFile.Click += new System.EventHandler(this.btnExportFile_Click);
             // 
@@ -102,7 +102,7 @@ namespace TF.Core.Views
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Name = "BinaryView";
-            this.Text = "View";
+            this.Text = "Visualizza";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.BinaryView_FormClosing);
             this.ResumeLayout(false);
 

@@ -16,7 +16,7 @@ namespace TF.Core.Files
     // Esta clase representa ficheros DDS, pero los convierte a PNG para exportar e importar
     public class DDS2File : DDSFile
     {
-        protected override string Filter => "Ficheros PNG (*.png)|*.png|Ficheros DDS (*.dds)|*.dds|Todos los ficheros (*.*)|*.*";
+        protected override string Filter => "File PNG (*.png)|*.png|File DDS (*.dds)|*.dds|Tutti i file (*.*)|*.*";
 
         private static readonly IDXGIFactory2 Factory;
         private static readonly FeatureLevel FeatureLevel;
