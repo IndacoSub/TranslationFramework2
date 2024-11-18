@@ -265,7 +265,7 @@
     <value>Magenta</value>
   </data>
   <data name="mniFileNew.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
-    <value>CTRL+N</value>
+    <value>Control+N</value>
   </data>
   <data name="mniFileNew.Size" type="System.Drawing.Size, System.Drawing">
     <value>168, 22</value>
@@ -277,7 +277,7 @@
     <value>Magenta</value>
   </data>
   <data name="mniFileOpen.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
-    <value>CTRL+O</value>
+    <value>Control+O</value>
   </data>
   <data name="mniFileOpen.Size" type="System.Drawing.Size, System.Drawing">
     <value>168, 22</value>
@@ -295,7 +295,7 @@
     <value>Magenta</value>
   </data>
   <data name="mniFileSave.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
-    <value>CTRL+S</value>
+    <value>Control+S</value>
   </data>
   <data name="mniFileSave.Size" type="System.Drawing.Size, System.Drawing">
     <value>168, 22</value>
@@ -334,7 +334,7 @@
     <value>False</value>
   </data>
   <data name="mniEditSearch.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
-    <value>CTRL+F</value>
+    <value>Control+F</value>
   </data>
   <data name="mniEditSearch.Size" type="System.Drawing.Size, System.Drawing">
     <value>260, 22</value>
@@ -349,7 +349,7 @@
     <value>False</value>
   </data>
   <data name="mniEditSearchInFiles.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
-    <value>CTRL+MAIUSC+F</value>
+    <value>Control+Shift+F</value>
   </data>
   <data name="mniEditSearchInFiles.Size" type="System.Drawing.Size, System.Drawing">
     <value>260, 22</value>

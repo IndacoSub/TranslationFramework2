@@ -333,3 +333,6 @@ ASALocalRun/
 .plastic/
 
 underrail.exe
+*.bak
+src/Plugins/TFGame.AITheSomniumFiles/*.txt
+src/Plugins/TFGame.AITheSomniumFiles/*.lua
