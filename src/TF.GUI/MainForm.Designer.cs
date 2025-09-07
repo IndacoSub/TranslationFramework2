@@ -69,6 +69,8 @@ namespace TF.GUI
 			this.mniBulkImagesExport = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniBulkImagesImport = new System.Windows.Forms.ToolStripMenuItem();
 			this.FolderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
+			this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+			this.LanguageComboBox = new System.Windows.Forms.ToolStripComboBox();
 			this.tlsMain.SuspendLayout();
 			this.mnuMain.SuspendLayout();
 			this.SuspendLayout();
@@ -89,7 +91,9 @@ namespace TF.GUI
             this.tsbExportProject,
             this.toolStripSeparator1,
             this.tsbSearch,
-            this.tsbSearchInFiles});
+            this.tsbSearchInFiles,
+            this.toolStripSeparator4,
+            this.LanguageComboBox});
 			this.tlsMain.Name = "tlsMain";
 			// 
 			// tsbNewFile
@@ -340,6 +344,20 @@ namespace TF.GUI
 			this.mniBulkImagesImport.Name = "mniBulkImagesImport";
 			this.mniBulkImagesImport.Click += new System.EventHandler(this.mniBulkImagesImport_Click);
 			// 
+			// toolStripSeparator4
+			// 
+			this.toolStripSeparator4.Name = "toolStripSeparator4";
+			resources.ApplyResources(this.toolStripSeparator4, "toolStripSeparator4");
+			// 
+			// LanguageComboBox
+			// 
+			this.LanguageComboBox.Items.AddRange(new object[] {
+            resources.GetString("LanguageComboBox.Items"),
+            resources.GetString("LanguageComboBox.Items1"),
+            resources.GetString("LanguageComboBox.Items2")});
+			this.LanguageComboBox.Name = "LanguageComboBox";
+			resources.ApplyResources(this.LanguageComboBox, "LanguageComboBox");
+			// 
 			// MainForm
 			// 
 			resources.ApplyResources(this, "$this");
@@ -404,6 +422,8 @@ namespace TF.GUI
 		private System.Windows.Forms.ToolStripMenuItem mniBulkTextsExportXlsx;
 		private System.Windows.Forms.ToolStripMenuItem mniBulkTextsImportXlsx;
 		private System.Windows.Forms.ToolStripMenuItem mniBulkTextsImportXlsxOffset;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
+		private System.Windows.Forms.ToolStripComboBox LanguageComboBox;
 	}
 }
 

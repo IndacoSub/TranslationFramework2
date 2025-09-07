@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using TF.Core.Entities;
@@ -6,151 +7,179 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace TF.GUI.Forms
 {
-    public partial class ExplorerForm : DockContent
-    {
-        private class NodeSorter : IComparer
-        {
-            // Puts folders before files. Sort alphabetically
-            public int Compare(object x, object y)
-            {
-                var tx = x as TreeNode;
-                var ty = y as TreeNode;
+	public partial class ExplorerForm : DockContent
+	{
+		private class NodeSorter : IComparer
+		{
+			// Puts folders before files. Sort alphabetically
+			public int Compare(object x, object y)
+			{
+				var tx = x as TreeNode;
+				var ty = y as TreeNode;
 
-                var tfc1 = tx.Tag as TranslationFileContainer;
-                var tfc2 = ty.Tag as TranslationFileContainer;
+				var tfc1 = tx.Tag as TranslationFileContainer;
+				var tfc2 = ty.Tag as TranslationFileContainer;
 
-                if (tfc1 != null && tfc2 == null)
-                {
-                    return -1;
-                }
+				if (tfc1 != null && tfc2 == null)
+				{
+					return -1;
+				}
 
-                if (tfc1 == null && tfc2 != null)
-                {
-                    return 1;
-                }
+				if (tfc1 == null && tfc2 != null)
+				{
+					return 1;
+				}
 
-                return string.CompareOrdinal(tx.Text, ty.Text);
-            }
-        }
-        
-        public delegate bool FileChangedHandler(TranslationFile selectedFile);
-        public delegate void RestoreItemHandler(object selectedNode);
+				return string.CompareOrdinal(tx.Text, ty.Text);
+			}
+		}
 
-        public event FileChangedHandler FileChanged;
-        public event RestoreItemHandler RestoreItem;
+		public delegate bool FileChangedHandler(TranslationFile selectedFile);
+		public delegate void RestoreItemHandler(object selectedNode);
 
-        private TreeNode _restoreSelectedNode;
+		public event FileChangedHandler FileChanged;
+		public event RestoreItemHandler RestoreItem;
 
-        public ExplorerForm()
-        {
-            InitializeComponent();
-            AutoScaleMode = AutoScaleMode.Dpi;
-            tvGameFiles.TreeViewNodeSorter = new NodeSorter();
-        }
+		private TreeNode _restoreSelectedNode;
 
-        public void LoadTree(IList<TranslationFileContainer> containers)
-        {
-            tvGameFiles.Nodes.Clear();
+		public ExplorerForm()
+		{
+			InitializeComponent();
+			AutoScaleMode = AutoScaleMode.Dpi;
+			tvGameFiles.TreeViewNodeSorter = new NodeSorter();
+		}
 
-            var nodes = new List<TreeNode>(containers.Count);
-            foreach (var fileContainer in containers)
-            {
-                var node = new TreeNode(fileContainer.Path, 0, 0)
-                {
-                    Tag = fileContainer
-                };
+		public void LoadTree(IList<TranslationFileContainer> containers)
+		{
+			tvGameFiles.Nodes.Clear();
 
-                foreach (var file in fileContainer.Files)
-                {
-                    var tnChild = new TreeNode(file.RelativePath, (int)file.Type, (int)file.Type)
-                    {
-                        Tag = file
-                    };
+			var nodes = new List<TreeNode>(containers.Count);
+			foreach (var fileContainer in containers)
+			{
+				var node = new TreeNode(fileContainer.Path, 0, 0)
+				{
+					Tag = fileContainer
+				};
 
-                    node.Nodes.Add(tnChild);
-                }
+				foreach (var file in fileContainer.Files)
+				{
+					var tnChild = new TreeNode(file.RelativePath, (int)file.Type, (int)file.Type)
+					{
+						Tag = file
+					};
 
-                nodes.Add(node);
-            }
+					node.Nodes.Add(tnChild);
+				}
 
-            tvGameFiles.Nodes.AddRange(nodes.ToArray());
-            tvGameFiles.Sort();
-        }
+				nodes.Add(node);
+			}
 
-        protected virtual bool OnFileChanged(TranslationFile selectedFile)
-        {
-            if (FileChanged != null)
-            {
-                var cancel = FileChanged.Invoke(selectedFile);
-                tvGameFiles.BeforeSelect -= tvGameFiles_BeforeSelect;
-                tvGameFiles.Focus();
-                tvGameFiles.BeforeSelect += tvGameFiles_BeforeSelect;
-                return cancel;
-            }
+			tvGameFiles.Nodes.AddRange(nodes.ToArray());
+			tvGameFiles.Sort();
+		}
 
-            return false;
-        }
+		protected virtual bool OnFileChanged(TranslationFile selectedFile)
+		{
+			if (FileChanged != null)
+			{
+				var cancel = FileChanged.Invoke(selectedFile);
+				tvGameFiles.BeforeSelect -= tvGameFiles_BeforeSelect;
+				tvGameFiles.Focus();
+				tvGameFiles.BeforeSelect += tvGameFiles_BeforeSelect;
+				return cancel;
+			}
 
-        private void tvGameFiles_BeforeSelect(object sender, TreeViewCancelEventArgs e)
-        {
-            if (e.Node == null)
-            {
-                var result = OnFileChanged(null);
-                e.Cancel = result;
-            }
-            else
-            {
-                var item = e.Node.Tag as TranslationFile;
-                var result = OnFileChanged(item);
-                e.Cancel = result;
-            }
-        }
+			return false;
+		}
 
-        private void tvGameFiles_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right)
-            {
-                _restoreSelectedNode = e.Node;
-                contextMenuStrip1.Show(tvGameFiles, e.Location);
-            }
-        }
+		private void tvGameFiles_BeforeSelect(object sender, TreeViewCancelEventArgs e)
+		{
+			if (e.Node == null)
+			{
+				var result = OnFileChanged(null);
+				e.Cancel = result;
+			}
+			else
+			{
+				var item = e.Node.Tag as TranslationFile;
+				var result = OnFileChanged(item);
+				e.Cancel = result;
+			}
+		}
 
-        private void mniRestoreItem_Click(object sender, System.EventArgs e)
-        {
-            OnRestoreItem(_restoreSelectedNode.Tag);
-        }
+		private void tvGameFiles_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
+		{
+			if (e.Button == MouseButtons.Right)
+			{
+				_restoreSelectedNode = e.Node;
+				contextMenuStrip1.Show(tvGameFiles, e.Location);
+			}
+		}
 
-        protected virtual void OnRestoreItem(object selectedNode)
-        {
-            RestoreItem?.Invoke(selectedNode);
-        }
+		private void mniRestoreItem_Click(object sender, System.EventArgs e)
+		{
+			OnRestoreItem(_restoreSelectedNode.Tag);
+		}
 
-        public void SelectPrevious()
-        {
-            var tn = tvGameFiles.SelectedNode;
-            if (tn?.Parent == null)
-            {
-                return;
-            }
+		protected virtual void OnRestoreItem(object selectedNode)
+		{
+			RestoreItem?.Invoke(selectedNode);
+		}
 
-            if (tn.Index > 0) 
-            {
-                tvGameFiles.SelectedNode = tn.Parent.Nodes[tn.Index - 1];
-            }
-        }
+		public void SelectPrevious()
+		{
+			var tn = tvGameFiles.SelectedNode;
+			if (tn?.Parent == null)
+			{
+				return;
+			}
 
-        public void SelectNext()
-        {
-            var tn = tvGameFiles.SelectedNode;
-            if (tn?.Parent == null)
-            {
-                return;
-            }
+			if (tn.Index > 0)
+			{
+				tvGameFiles.SelectedNode = tn.Parent.Nodes[tn.Index - 1];
+			}
+		}
 
-            if (tn.Index < tn.Parent.Nodes.Count - 1) 
-            {
-                tvGameFiles.SelectedNode = tn.Parent.Nodes[tn.Index + 1];
-            }
-        }
-    }
+		public void SelectNext()
+		{
+			var tn = tvGameFiles.SelectedNode;
+			if (tn?.Parent == null)
+			{
+				return;
+			}
+
+			if (tn.Index < tn.Parent.Nodes.Count - 1)
+			{
+				tvGameFiles.SelectedNode = tn.Parent.Nodes[tn.Index + 1];
+			}
+		}
+
+		public void UpdateGUIText()
+		{
+			// Define translations: key = control/menu item reference, value = list of translations
+			Dictionary<object, List<string>> translations = new Dictionary<object, List<string>>
+			{
+				{ this, new List<string> { "Esplora", "Explore", "Durchsuchen" } },
+				{ this.mniRestoreItem, new List<string> { "Ripristina originale/i", "Revert to original", "Original wiederherstellen" } },
+			};
+
+			foreach (var pair in translations)
+			{
+				if (LanguageManager.LanguageIndex < pair.Value.Count)
+				{
+					switch (pair.Key)
+					{
+						case Control ctrl:
+							ctrl.Text = pair.Value[LanguageManager.LanguageIndex];
+							break;
+						case ToolStripItem item:
+							item.Text = pair.Value[LanguageManager.LanguageIndex];
+							break;
+						default:
+							throw new InvalidOperationException("Unsupported UI element type.");
+					}
+				}
+			}
+		}
+	}
 }
