@@ -53,7 +53,7 @@ namespace TF.Core.Views
             this.btnExportImage.Name = "btnExportImage";
             this.btnExportImage.Size = new System.Drawing.Size(75, 23);
             this.btnExportImage.TabIndex = 8;
-            this.btnExportImage.Text = "Exportar";
+            this.btnExportImage.Text = "Esporta";
             this.btnExportImage.UseVisualStyleBackColor = true;
             this.btnExportImage.Click += new System.EventHandler(this.btnExportImage_Click);
             // 
@@ -64,7 +64,7 @@ namespace TF.Core.Views
             this.btnImportImage.Name = "btnImportImage";
             this.btnImportImage.Size = new System.Drawing.Size(75, 23);
             this.btnImportImage.TabIndex = 7;
-            this.btnImportImage.Text = "Importar";
+            this.btnImportImage.Text = "Importa";
             this.btnImportImage.UseVisualStyleBackColor = true;
             this.btnImportImage.Click += new System.EventHandler(this.btnImportImage_Click);
             // 
@@ -94,8 +94,7 @@ namespace TF.Core.Views
             this.txtSample.Name = "txtSample";
             this.txtSample.Size = new System.Drawing.Size(556, 20);
             this.txtSample.TabIndex = 10;
-            this.txtSample.Text = "El veloz murciélago hindú comía feliz cardillo y kiwi. La cigüeña tocaba el saxof" +
-    "ón detrás del palenque de paja.";
+            this.txtSample.Text = "Qualche vago ione tipo zolfo, bromo, sodio.";
             this.txtSample.TextChanged += new System.EventHandler(this.txtSample_TextChanged);
             // 
             // label1

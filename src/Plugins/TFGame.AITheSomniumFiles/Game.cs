@@ -67,10 +67,10 @@ namespace TFGame.AITheSomniumFiles
 
             var textSearch = new GameFileSearch()
             {
-                RelativePath = @"Unity_Assets_Files\luabytecode\CAB-0670e8eb4b419284c6de5d2d82066179\",
-                SearchPattern = "*-us.txt",
+                RelativePath = @"Unity_Assets_Files\luabytecode\",
+                SearchPattern = "*.*",
                 IsWildcard = true,
-                RecursiveSearch = false,
+                RecursiveSearch = true,
                 FileType = typeof(Files.LuaText.File)
             };
 

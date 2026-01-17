@@ -37,7 +37,7 @@ namespace YakuzaGame.Files.Msg
             _msgView.Show(panel, DockState.Document);
         }
 #endif
-        protected override IList<TF.Core.TranslationEntities.Subtitle> GetSubtitles()
+		public override IList<TF.Core.TranslationEntities.Subtitle> GetSubtitles()
         {
             var result = new List<TF.Core.TranslationEntities.Subtitle>();
 

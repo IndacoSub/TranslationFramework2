@@ -69,7 +69,7 @@ namespace TFGame.TheMissing.Files.Txt
             {
                 DataPropertyName = "Text",
                 Name = "colOriginal",
-                HeaderText = "Original",
+                HeaderText = "Originale",
                 AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
                 DefaultCellStyle = new DataGridViewCellStyle {BackColor = Color.LightGray},
                 ReadOnly = true,
@@ -81,7 +81,7 @@ namespace TFGame.TheMissing.Files.Txt
             {
                 DataPropertyName = "Translation",
                 Name = "colTranslation",
-                HeaderText = "Traducción",
+                HeaderText = "Traduzione",
                 AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
                 SortMode = DataGridViewColumnSortMode.NotSortable,
             };
@@ -91,7 +91,7 @@ namespace TFGame.TheMissing.Files.Txt
             {
                 DataPropertyName = "Width",
                 Name = "colWidth",
-                HeaderText = "Ancho",
+                HeaderText = "Larghezza",
                 AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
                 DecimalPlaces = 0,
                 DefaultCellStyle = new DataGridViewCellStyle { Alignment = DataGridViewContentAlignment.MiddleRight },
@@ -107,7 +107,7 @@ namespace TFGame.TheMissing.Files.Txt
             {
                 DataPropertyName = "Height",
                 Name = "colHeight",
-                HeaderText = "Alto",
+                HeaderText = "Altezza",
                 AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
                 DecimalPlaces = 0,
                 DefaultCellStyle = new DataGridViewCellStyle { Alignment = DataGridViewContentAlignment.MiddleRight },
@@ -364,7 +364,7 @@ namespace TFGame.TheMissing.Files.Txt
             }
             catch (Exception e)
             {
-                MessageBox.Show($"No se ha podido abrir el fichero.\r\n{e.GetType()}: {e.Message}", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Non e' stato possibile aprire il file.\r\n{e.GetType()}: {e.Message}", "ERRORE", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -377,7 +377,7 @@ namespace TFGame.TheMissing.Files.Txt
         {
             var changedLines = _subtitles.Count(x => x.Text != x.Translation);
             var totalLines = _subtitles.Count;
-            lblChangedLinesCount.Text = $"Líneas modificadas: {changedLines}/{totalLines}";
+            lblChangedLinesCount.Text = $"Righe modificate: {changedLines}/{totalLines}";
         }
 
         private void SubtitleGridView_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)

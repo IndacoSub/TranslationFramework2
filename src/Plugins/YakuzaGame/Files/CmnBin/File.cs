@@ -15,7 +15,7 @@ namespace YakuzaGame.Files.CmnBin
         {
         }
 
-        protected override IList<TF.Core.TranslationEntities.Subtitle> GetSubtitles()
+		public override IList<TF.Core.TranslationEntities.Subtitle> GetSubtitles()
         {
             var temp = new List<Subtitle>();
 

@@ -184,7 +184,7 @@
     <value>5</value>
   </data>
   <data name="label1.Text" xml:space="preserve">
-    <value>Carpeta de trabajo:</value>
+    <value>Cartella di lavoro:</value>
   </data>
   <data name="&gt;&gt;label1.Name" xml:space="preserve">
     <value>label1</value>
@@ -214,7 +214,7 @@
     <value>6</value>
   </data>
   <data name="label2.Text" xml:space="preserve">
-    <value>Carpeta de instalación:</value>
+    <value>Cartella dell'installazione:</value>
   </data>
   <data name="&gt;&gt;label2.Name" xml:space="preserve">
     <value>label2</value>
@@ -241,7 +241,7 @@
     <value>7</value>
   </data>
   <data name="btnCancel.Text" xml:space="preserve">
-    <value>Cancelar</value>
+    <value>Annulla</value>
   </data>
   <data name="&gt;&gt;btnCancel.Name" xml:space="preserve">
     <value>btnCancel</value>
@@ -271,7 +271,7 @@
     <value>8</value>
   </data>
   <data name="btnOK.Text" xml:space="preserve">
-    <value>Aceptar</value>
+    <value>OK</value>
   </data>
   <data name="&gt;&gt;btnOK.Name" xml:space="preserve">
     <value>btnOK</value>
@@ -445,7 +445,7 @@
     <value>CenterParent</value>
   </data>
   <data name="$this.Text" xml:space="preserve">
-    <value>Nueva Traducción</value>
+    <value>Nuova Traduzione</value>
   </data>
   <data name="&gt;&gt;folderBrowserDlg.Name" xml:space="preserve">
     <value>folderBrowserDlg</value>

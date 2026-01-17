@@ -19,7 +19,7 @@ namespace TF.Core.Files
         protected ImageView _view;
         private Image _currentImage;
 
-        protected virtual string Filter => "Todos los ficheros (*.*)|*.*";
+        protected virtual string Filter => "Tutti i file (*.*)|*.*";
 
         public ImageFile(string gameName, string path, string changesFolder) : base(gameName, path, changesFolder, null)
         {

@@ -13,7 +13,7 @@ namespace YakuzaGame.Files.Blacksmith
         {
         }
 
-        protected override IList<Subtitle> GetSubtitles()
+		public override IList<Subtitle> GetSubtitles()
         {
             var result = new List<Subtitle>();
 

@@ -13,606 +13,857 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace TF.GUI
 {
-    partial class MainForm
-    {
-        private TranslationProject _project;
-        private TranslationFile _currentFile = null;
-        private string _currentSearch = string.Empty;
+	partial class MainForm
+	{
+		private TranslationProject _project;
+		private TranslationFile _currentFile = null;
+		private string _currentSearch = string.Empty;
 
-        private void SaveSettings()
-        {
-            SaveDockSettings();
-            Settings.Default.Save();
-        }
+		private void SaveSettings()
+		{
+			SaveDockSettings();
+			Settings.Default.Save();
+		}
 
-        private void CreateNewTranslation()
-        {
-            var infos = _pluginManager.GetAllGames();
-            var form = new NewProjectSettings(dockTheme, infos);
-            var formResult = form.ShowDialog(this);
+		private void CreateNewTranslation()
+		{
+			var infos = _pluginManager.GetAllGames();
+			var form = new NewProjectSettings(dockTheme, infos);
+			form.UpdateGUIText();
+			var formResult = form.ShowDialog(this);
 
-            if (formResult == DialogResult.Cancel)
-            {
-                return;
-            }
+			if (formResult == DialogResult.Cancel)
+			{
+				return;
+			}
 
-            if (!CloseAllDocuments())
-            {
-                return;
-            }
+			if (!CloseAllDocuments())
+			{
+				return;
+			}
 
-            var game = _pluginManager.GetGame(form.SelectedGame);
-            var workFolder = form.WorkFolder;
-            var gameFolder = form.GameFolder;
+			var game = _pluginManager.GetGame(form.SelectedGame);
+			var workFolder = form.WorkFolder;
+			var gameFolder = form.GameFolder;
 
-            if (Directory.Exists(workFolder))
-            {
-                var files = Directory.GetFiles(workFolder);
-                var directories = Directory.GetDirectories(workFolder);
+			if (Directory.Exists(workFolder))
+			{
+				var files = Directory.GetFiles(workFolder);
+				var directories = Directory.GetDirectories(workFolder);
 
-                if (files.Length + directories.Length > 0)
-                {
+				const bool force_empty = true;
+
+				if (force_empty && files.Length + directories.Length > 0)
+				{
 #if DEBUG
                     PathHelper.DeleteDirectory(workFolder);
 #else
-                    MessageBox.Show($"La carpeta {workFolder} no está vacía. Debes elegir una carpeta vacía.", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                    return;
+					string message = string.Format(LanguageManager.GetTranslation(9), workFolder);
+					string caption = LanguageManager.GetTranslation(10);
+
+					MessageBox.Show(message, caption, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+
+					return;
 #endif
-                }
-            }
-            else
-            {
-                Directory.CreateDirectory(workFolder);
-            }
+				}
+			}
+			else
+			{
+				Directory.CreateDirectory(workFolder);
+			}
 
-            var project = new TranslationProject(game, gameFolder, workFolder);
+			var project = new TranslationProject(game, gameFolder, workFolder);
 
-            var workForm = new WorkingForm(dockTheme, "Nueva traducción");
-            
-            workForm.DoWork += (sender, args) =>
-            {
-                var worker = sender as BackgroundWorker;
+			var workForm = new WorkingForm(dockTheme, LanguageManager.GetTranslation(5));
 
-                try
-                {
-                    project.ReadTranslationFiles(worker);
-                    worker.ReportProgress(-1, "FINALIZADO");
-                }
-                catch (UserCancelException)
-                {
-                    args.Cancel = true;
-                    worker.ReportProgress(-1, "Eliminando ficheros...");
-                    PathHelper.DeleteDirectory(workFolder);
-                    worker.ReportProgress(-1, "Terminado");
-                }
+			workForm.DoWork += (sender, args) =>
+			{
+				var worker = sender as BackgroundWorker;
+
+				try
+				{
+					project.ReadTranslationFiles(worker);
+					worker.ReportProgress(-1, LanguageManager.GetTranslation(6));
+				}
+				catch (UserCancelException)
+				{
+					args.Cancel = true;
+					worker.ReportProgress(-1, LanguageManager.GetTranslation(7));
+					PathHelper.DeleteDirectory(workFolder);
+					worker.ReportProgress(-1, LanguageManager.GetTranslation(8));
+				}
 #if !DEBUG
-                catch (Exception e)
-                {
-                    worker.ReportProgress(0, $"ERROR: {e.Message}\n{e.StackTrace}");
-                }
+				catch (Exception e)
+				{
+					worker.ReportProgress(0, $"ERROR: {e.Message}\n{e.StackTrace}");
+				}
 #endif
-            };
-            
-            workForm.ShowDialog(this);
+			};
 
-            if (workForm.Cancelled)
-            {
-                return;
-            }
+			workForm.ShowDialog(this);
 
-            _project = project;
+			if (workForm.Cancelled)
+			{
+				return;
+			}
 
-            _explorer.LoadTree(_project.FileContainers);
+			_project = project;
 
-            _currentFile = null;
+			_explorer.LoadTree(_project.FileContainers);
 
-            _project.Save();
+			_currentFile = null;
 
-            Text = $"Translation Framework 2.0 - {_project.Game.Name} - {_project.WorkPath}";
-            tsbExportProject.Enabled = true;
-            mniFileExport.Enabled = true;
-            tsbSearchInFiles.Enabled = true;
-            mniEditSearchInFiles.Enabled = true;
+			_project.Save();
 
-            mniBulkTextsExport.Enabled = true;
-            mniBulkTextsImport.Enabled = true;
-            mniBulkImagesExport.Enabled = true;
-            mniBulkImagesImport.Enabled = true;
-        }
+			Text = $"Translation Framework 2.0 - {_project.Game.Name} - {_project.WorkPath}";
+			tsbExportProject.Enabled = true;
+			mniFileExport.Enabled = true;
+			tsbSearchInFiles.Enabled = true;
+			mniEditSearchInFiles.Enabled = true;
 
-        private void LoadTranslation()
-        {
-            var dialogResult = LoadFileDialog.ShowDialog(this);
+			mniBulkTextsExportPo.Enabled = true;
+			mniBulkTextsImportPo.Enabled = true;
+			mniBulkImagesExport.Enabled = true;
+			mniBulkImagesImport.Enabled = true;
+			mniBulkTextsExportXlsx.Enabled = true;
+			mniBulkTextsImportXlsx.Enabled = true;
 
-            if (dialogResult == DialogResult.OK)
-            {
-                if (!CloseAllDocuments())
-                {
-                    return;
-                }
+			// Disabled due to a bug
+			// where all offsets are zero,
+			// when exporting
+			mniBulkTextsImportXlsxOffset.Enabled = false;
+		}
 
-                var workForm = new WorkingForm(dockTheme, "Cargar traducción", true);
+		private void LoadTranslation()
+		{
+			var dialogResult = LoadFileDialog.ShowDialog(this);
 
-                TranslationProject project = null;
+			if (dialogResult == DialogResult.OK)
+			{
+				if (!CloseAllDocuments())
+				{
+					return;
+				}
 
-                workForm.DoWork += (sender, args) =>
-                {
-                    var worker = sender as BackgroundWorker;
+				var workForm = new WorkingForm(dockTheme, LanguageManager.GetTranslation(11), true);
 
-                    try
-                    {
-                        project = TranslationProject.Load(LoadFileDialog.FileName, _pluginManager, worker);
-                    }
-                    catch (UserCancelException)
-                    {
-                        args.Cancel = true;
-                    }
-                    catch (Exception e)
-                    {
-                        MessageBox.Show(e.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
-                };
+				TranslationProject project = null;
 
-                workForm.ShowDialog(this);
+				workForm.DoWork += (sender, args) =>
+				{
+					var worker = sender as BackgroundWorker;
 
-                if (workForm.Cancelled)
-                {
-                    return;
-                }
+					try
+					{
+						project = TranslationProject.Load(LoadFileDialog.FileName, _pluginManager, worker);
+					}
+					catch (UserCancelException)
+					{
+						args.Cancel = true;
+					}
+					catch (Exception e)
+					{
+						MessageBox.Show(e.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+						return;
+					}
+				};
 
-                _project = project;
-                _currentFile = null;
+				workForm.ShowDialog(this);
 
-                _explorer.LoadTree(_project.FileContainers);
+				if (workForm.Cancelled)
+				{
+					return;
+				}
 
-                _project.Save();
+				_project = project;
+				_currentFile = null;
 
-                Text = $"Translation Framework 2.0 - {_project.Game.Name} - {_project.WorkPath}";
-                tsbExportProject.Enabled = true;
-                mniFileExport.Enabled = true;
-                tsbSearchInFiles.Enabled = true;
-                mniEditSearchInFiles.Enabled = true;
+				_explorer.LoadTree(_project.FileContainers);
 
-                mniBulkTextsExport.Enabled = true;
-                mniBulkTextsImport.Enabled = true;
-                mniBulkImagesExport.Enabled = true;
-                mniBulkImagesImport.Enabled = true;
-            }
-        }
+				_project.Save();
 
-        private void SaveChanges()
-        {
-            _currentFile?.SaveChanges();
-        }
+				Text = $"Translation Framework 2.0 - {_project.Game.Name} - {_project.WorkPath}";
+				tsbExportProject.Enabled = true;
+				mniFileExport.Enabled = true;
+				tsbSearchInFiles.Enabled = true;
+				mniEditSearchInFiles.Enabled = true;
 
-        private void ExportProject()
-        {
-            if (_project != null)
-            {
-                if (_currentFile != null)
-                {
-                    if (_currentFile.NeedSaving)
-                    {
-                        var result = MessageBox.Show(
-                            "Es necesario guardar los cambios antes de continuar.\n¿Quieres guardarlos?",
-                            "Guardar cambios", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+				mniBulkTextsExportPo.Enabled = true;
+				mniBulkTextsImportPo.Enabled = true;
+				mniBulkImagesExport.Enabled = true;
+				mniBulkImagesImport.Enabled = true;
+				mniBulkTextsExportXlsx.Enabled = true;
+				mniBulkTextsImportXlsx.Enabled = true;
+				mniBulkTextsImportXlsxOffset.Enabled = true;
 
-                        if (result == DialogResult.No)
-                        {
-                            return;
-                        }
+			}
+		}
 
-                        if (result == DialogResult.Yes)
-                        {
-                            _currentFile.SaveChanges();
-                        }
-                    }
-                }
+		private void SaveChanges()
+		{
+			_currentFile?.SaveChanges();
+		}
 
-                var form = new ExportProjectForm(dockTheme, _project.FileContainers);
+		private void ExportProject()
+		{
+			if (_project != null)
+			{
+				if (_currentFile != null)
+				{
+					if (_currentFile.NeedSaving)
+					{
+						var result = MessageBox.Show(
+							LanguageManager.GetTranslation(12),
+							LanguageManager.GetTranslation(13),
+							MessageBoxButtons.YesNo,
+							MessageBoxIcon.Question);
 
-                var formResult = form.ShowDialog(this);
 
-                if (formResult == DialogResult.Cancel)
-                {
-                    return;
-                }
+						if (result == DialogResult.No)
+						{
+							return;
+						}
 
-                var selectedContainers = form.SelectedContainers;
-                var options = form.Options;
+						if (result == DialogResult.Yes)
+						{
+							_currentFile.SaveChanges();
+						}
+					}
+				}
 
-                var workForm = new WorkingForm(dockTheme, "Exportar traducción");
+				var form = new ExportProjectForm(dockTheme, _project.FileContainers);
+				form.UpdateGUIText();
 
-                workForm.DoWork += (sender, args) =>
-                {
-                    var worker = sender as BackgroundWorker;
+				var formResult = form.ShowDialog(this);
 
-                    try
-                    {
-                        _project.Export(selectedContainers, options, worker);
+				if (formResult == DialogResult.Cancel)
+				{
+					return;
+				}
 
-                        worker.ReportProgress(-1, "FINALIZADO");
-                        worker.ReportProgress(-1, string.Empty);
-                        worker.ReportProgress(-1, $"Los ficheros exportados están en {_project.ExportFolder}");
-                    }
-                    catch (UserCancelException)
-                    {
-                        args.Cancel = true;
-                    }
+				var selectedContainers = form.SelectedContainers;
+				var options = form.Options;
+
+				var workForm = new WorkingForm(dockTheme, LanguageManager.GetTranslation(14));
+
+				workForm.DoWork += (sender, args) =>
+				{
+					var worker = sender as BackgroundWorker;
+
+					try
+					{
+						_project.Export(selectedContainers, options, worker);
+
+						worker.ReportProgress(-1, LanguageManager.GetTranslation(6));
+						worker.ReportProgress(-1, string.Empty);
+						worker.ReportProgress(-1, string.Format(LanguageManager.GetTranslation(15), _project.ExportFolder));
+					}
+					catch (UserCancelException)
+					{
+						args.Cancel = true;
+					}
 #if !DEBUG
-                    catch (Exception e)
-                    {
-                        worker.ReportProgress(0, $"ERROR: {e.Message}");
-                    }
+					catch (Exception e)
+					{
+						worker.ReportProgress(0, $"ERROR: {e.Message}");
+					}
 #endif
-                };
+				};
 
-                workForm.ShowDialog(this);
-            }
-        }
+				workForm.ShowDialog(this);
+			}
+		}
 
-        private void SearchInFiles()
-        {
-            if (_project != null)
-            {
-                var form = new SearchInFilesForm(dockTheme);
+		private void SearchInFiles()
+		{
+			if (_project != null)
+			{
+				var form = new SearchInFilesForm(dockTheme);
+				form.UpdateGUIText();
 
-                var formResult = form.ShowDialog(this);
+				var formResult = form.ShowDialog(this);
 
-                if (formResult == DialogResult.Cancel)
-                {
-                    return;
-                }
+				if (formResult == DialogResult.Cancel)
+				{
+					return;
+				}
 
-                var searchString = form.SearchString;
-                var workForm = new WorkingForm(dockTheme, "Buscar en ficheros", true);
-                IList<Tuple<TranslationFileContainer, TranslationFile>> filesFound = null;
-                workForm.DoWork += (sender, args) =>
-                {
-                    var worker = sender as BackgroundWorker;
+				var searchString = form.SearchString;
+				var workForm = new WorkingForm(dockTheme, LanguageManager.GetTranslation(16), true);
 
-                    try
-                    {
-                        filesFound = _project.SearchInFiles(searchString, worker);
+				IList<Tuple<TranslationFileContainer, TranslationFile>> filesFound = null;
+				workForm.DoWork += (sender, args) =>
+				{
+					var worker = sender as BackgroundWorker;
 
-                        worker.ReportProgress(-1, "FINALIZADO");
-                    }
-                    catch (UserCancelException)
-                    {
-                        args.Cancel = true;
-                    }
-                    catch (Exception e)
-                    {
-                        worker.ReportProgress(0, $"ERROR: {e.Message}");
-                    }
-                };
+					try
+					{
+						filesFound = _project.SearchInFiles(searchString, worker);
 
-                workForm.ShowDialog(this);
+						worker.ReportProgress(-1, LanguageManager.GetTranslation(6));
+					}
+					catch (UserCancelException)
+					{
+						args.Cancel = true;
+					}
+					catch (Exception e)
+					{
+						worker.ReportProgress(0, $"ERROR: {e.Message}");
+					}
+				};
 
-                if (workForm.Cancelled)
-                {
-                    return;
-                }
+				workForm.ShowDialog(this);
 
-                _searchResults.LoadItems(searchString, filesFound);
-                if (_searchResults.VisibleState == DockState.DockBottomAutoHide)
-                {
-                    dockPanel.ActiveAutoHideContent = _searchResults;
-                }
-            }
-        }
+				if (workForm.Cancelled)
+				{
+					return;
+				}
 
-        private void SearchText()
-        {
-            if (_project != null && _currentFile != null && _currentFile.Type == FileType.TextFile)
-            {
-                var form = new SearchTextForm(dockTheme);
+				_searchResults.LoadItems(searchString, filesFound);
+				if (_searchResults.VisibleState == DockState.DockBottomAutoHide)
+				{
+					dockPanel.ActiveAutoHideContent = _searchResults;
+				}
+			}
+		}
 
-                var formResult = form.ShowDialog(this);
+		private void SearchText()
+		{
+			if (_project != null && _currentFile != null && _currentFile.Type == FileType.TextFile)
+			{
+				var form = new SearchTextForm(dockTheme);
+				form.UpdateGUIText();
 
-                if (formResult == DialogResult.Cancel)
-                {
-                    return;
-                }
+				var formResult = form.ShowDialog(this);
 
-                _currentSearch = form.SearchString;
+				if (formResult == DialogResult.Cancel)
+				{
+					return;
+				}
 
-                var textFound = _currentFile.SearchText(_currentSearch, 0);
+				_currentSearch = form.SearchString;
 
-                if (!textFound)
-                {
-                    MessageBox.Show("No se han encontrado coincidencias.", "Buscar", MessageBoxButtons.OK,
-                        MessageBoxIcon.Exclamation);
-                }
-            }
-        }
+				var textFound = _currentFile.SearchText(_currentSearch, 0);
 
-        private void SearchText(int direction)
-        {
-            if (_project != null && _currentFile != null && _currentFile.Type == FileType.TextFile)
-            {
-                if (!string.IsNullOrEmpty(_currentSearch))
-                {
-                    var textFound = _currentFile.SearchText(_currentSearch, direction);
+				if (!textFound)
+				{
+					MessageBox.Show(
+						LanguageManager.GetTranslation(17),
+						LanguageManager.GetTranslation(18),
+						MessageBoxButtons.OK,
+						MessageBoxIcon.Exclamation);
 
-                    if (!textFound)
-                    {
-                        MessageBox.Show("No se han encontrado coincidencias.", "Buscar", MessageBoxButtons.OK,
-                            MessageBoxIcon.Exclamation);
-                    }
-                }
-            }
-        }
+				}
+			}
+		}
 
-        private void ExportTexts()
-        {
-            if (_project != null)
-            {
-                if (_currentFile != null)
-                {
-                    if (_currentFile.NeedSaving)
-                    {
-                        var result = MessageBox.Show(
-                            "Es necesario guardar los cambios antes de continuar.\n¿Quieres guardarlos?",
-                            "Guardar cambios", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+		private void SearchText(int direction)
+		{
+			if (_project != null && _currentFile != null && _currentFile.Type == FileType.TextFile)
+			{
+				if (!string.IsNullOrEmpty(_currentSearch))
+				{
+					var textFound = _currentFile.SearchText(_currentSearch, direction);
 
-                        if (result == DialogResult.No)
-                        {
-                            return;
-                        }
+					if (!textFound)
+					{
+						MessageBox.Show(
+							LanguageManager.GetTranslation(17),
+							LanguageManager.GetTranslation(18),
+							MessageBoxButtons.OK,
+							MessageBoxIcon.Exclamation);
 
-                        if (result == DialogResult.Yes)
-                        {
-                            _currentFile.SaveChanges();
-                        }
-                    }
-                }
+					}
+				}
+			}
+		}
 
-                FolderBrowserDialog.Description = "Selecciona la carpeta en la que se guardarán los ficheros Po";
-                FolderBrowserDialog.ShowNewFolderButton = true;
+		private void ExportTexts()
+		{
+			if (_project != null)
+			{
+				if (_currentFile != null)
+				{
+					if (_currentFile.NeedSaving)
+					{
+						var result = MessageBox.Show(
+							LanguageManager.GetTranslation(12),
+							LanguageManager.GetTranslation(13),
+							MessageBoxButtons.YesNo,
+							MessageBoxIcon.Question);
 
-                var formResult = FolderBrowserDialog.ShowDialog(this);
 
-                if (formResult == DialogResult.Cancel)
-                {
-                    return;
-                }
+						if (result == DialogResult.No)
+						{
+							return;
+						}
 
-                var workForm = new WorkingForm(dockTheme, "Exportar a Po");
+						if (result == DialogResult.Yes)
+						{
+							_currentFile.SaveChanges();
+						}
+					}
+				}
 
-                workForm.DoWork += (sender, args) =>
-                {
-                    var worker = sender as BackgroundWorker;
+				FolderBrowserDialog.Description = LanguageManager.GetTranslation(19);
+				FolderBrowserDialog.ShowNewFolderButton = true;
 
-#if !DEBUG
-                    try
-                    {
-#endif
-                        _project.ExportPo(FolderBrowserDialog.SelectedPath, worker);
+				var formResult = FolderBrowserDialog.ShowDialog(this);
 
-                        worker.ReportProgress(-1, "FINALIZADO");
-                        worker.ReportProgress(-1, string.Empty);
-                        worker.ReportProgress(-1, $"Los ficheros exportados están en {FolderBrowserDialog.SelectedPath}");
-#if !DEBUG
-                    }
-                    catch (UserCancelException e)
-                    {
-                        args.Cancel = true;
-                    }
+				if (formResult == DialogResult.Cancel)
+				{
+					return;
+				}
 
-                    catch (Exception e)
-                    {
-                        worker.ReportProgress(0, $"ERROR: {e.Message}");
-                    }
-#endif
-                };
+				var workForm = new WorkingForm(dockTheme, LanguageManager.GetTranslation(20));
 
-                workForm.ShowDialog(this);
-            }
-        }
-
-        private void ExportImages()
-        {
-            if (_project != null)
-            {
-                if (_currentFile != null)
-                {
-                    if (_currentFile.NeedSaving)
-                    {
-                        var result = MessageBox.Show(
-                            "Es necesario guardar los cambios antes de continuar.\n¿Quieres guardarlos?",
-                            "Guardar cambios", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-
-                        if (result == DialogResult.No)
-                        {
-                            return;
-                        }
-
-                        if (result == DialogResult.Yes)
-                        {
-                            _currentFile.SaveChanges();
-                        }
-                    }
-                }
-
-                FolderBrowserDialog.Description = "Selecciona la carpeta en la que se guardarán las imágenes";
-                FolderBrowserDialog.ShowNewFolderButton = true;
-
-                var formResult = FolderBrowserDialog.ShowDialog(this);
-
-                if (formResult == DialogResult.Cancel)
-                {
-                    return;
-                }
-
-                var workForm = new WorkingForm(dockTheme, "Exportar Imágenes");
-
-                workForm.DoWork += (sender, args) =>
-                {
-                    var worker = sender as BackgroundWorker;
+				workForm.DoWork += (sender, args) =>
+				{
+					var worker = sender as BackgroundWorker;
 
 #if !DEBUG
-                    try
-                    {
+					try
+					{
 #endif
-                        _project.ExportImages(FolderBrowserDialog.SelectedPath, worker);
+						_project.ExportPo(FolderBrowserDialog.SelectedPath, worker);
 
-                        worker.ReportProgress(-1, "FINALIZADO");
-                        worker.ReportProgress(-1, string.Empty);
-                        worker.ReportProgress(-1, $"Los ficheros exportados están en {FolderBrowserDialog.SelectedPath}");
+						worker.ReportProgress(-1, LanguageManager.GetTranslation(6)); // "FINE"
+						worker.ReportProgress(-1, string.Empty);
+						worker.ReportProgress(-1, string.Format(LanguageManager.GetTranslation(21), FolderBrowserDialog.SelectedPath));
 #if !DEBUG
-                    }
-                    catch (UserCancelException e)
-                    {
-                        args.Cancel = true;
-                    }
+					}
+					catch (UserCancelException e)
+					{
+						args.Cancel = true;
+					}
 
-                    catch (Exception e)
-                    {
-                        worker.ReportProgress(0, $"ERROR: {e.Message}");
-                    }
+					catch (Exception e)
+					{
+						worker.ReportProgress(0, $"ERROR: {e.Message}");
+					}
 #endif
-                };
+				};
 
-                workForm.ShowDialog(this);
-            }
-        }
+				workForm.ShowDialog(this);
+			}
+		}
 
-        private void ImportTexts()
-        {
-            if (_project != null)
-            {
-                if (_currentFile != null)
-                {
-                    if (_currentFile.NeedSaving)
-                    {
-                        var result = MessageBox.Show(
-                            "Es necesario guardar los cambios antes de continuar.\n¿Quieres guardarlos?",
-                            "Guardar cambios", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+		private void ExportImages()
+		{
+			if (_project != null)
+			{
+				if (_currentFile != null)
+				{
+					if (_currentFile.NeedSaving)
+					{
+						var result = MessageBox.Show(
+							LanguageManager.GetTranslation(12),
+							LanguageManager.GetTranslation(13),
+							MessageBoxButtons.YesNo,
+							MessageBoxIcon.Question);
 
-                        if (result == DialogResult.No)
-                        {
-                            return;
-                        }
+						if (result == DialogResult.No)
+						{
+							return;
+						}
 
-                        if (result == DialogResult.Yes)
-                        {
-                            _currentFile.SaveChanges();
-                        }
-                    }
-                }
+						if (result == DialogResult.Yes)
+						{
+							_currentFile.SaveChanges();
+						}
+					}
+				}
 
-                FolderBrowserDialog.Description = "Selecciona la carpeta raiz con los ficheros Po";
-                FolderBrowserDialog.ShowNewFolderButton = false;
+				FolderBrowserDialog.Description = LanguageManager.GetTranslation(22);
+				FolderBrowserDialog.ShowNewFolderButton = true;
 
-                var formResult = FolderBrowserDialog.ShowDialog(this);
+				var formResult = FolderBrowserDialog.ShowDialog(this);
 
-                if (formResult == DialogResult.Cancel)
-                {
-                    return;
-                }
+				if (formResult == DialogResult.Cancel)
+				{
+					return;
+				}
 
-                var openFile = _currentFile;
-                ExplorerOnFileChanged(null);
-                
-                var workForm = new WorkingForm(dockTheme, "Importar Po");
+				var workForm = new WorkingForm(dockTheme, LanguageManager.GetTranslation(23));
 
-                workForm.DoWork += (sender, args) =>
-                {
-                    var worker = sender as BackgroundWorker;
+				workForm.DoWork += (sender, args) =>
+				{
+					var worker = sender as BackgroundWorker;
 
-                    try
-                    {
-                        _project.ImportPo(FolderBrowserDialog.SelectedPath, worker);
-
-                        worker.ReportProgress(-1, "FINALIZADO");
-                        worker.ReportProgress(-1, string.Empty);
-                    }
-                    catch (UserCancelException)
-                    {
-                        args.Cancel = true;
-                    }
 #if !DEBUG
-                    catch (Exception e)
-                    {
-                        worker.ReportProgress(0, $"ERROR: {e.Message}");
-                    }
+					try
+					{
 #endif
-                };
+						_project.ExportImages(FolderBrowserDialog.SelectedPath, worker);
 
-                workForm.ShowDialog(this);
-
-                ExplorerOnFileChanged(openFile);
-            }
-        }
-
-        private void ImportImages()
-        {
-            if (_project != null)
-            {
-                if (_currentFile != null)
-                {
-                    if (_currentFile.NeedSaving)
-                    {
-                        var result = MessageBox.Show(
-                            "Es necesario guardar los cambios antes de continuar.\n¿Quieres guardarlos?",
-                            "Guardar cambios", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-
-                        if (result == DialogResult.No)
-                        {
-                            return;
-                        }
-
-                        if (result == DialogResult.Yes)
-                        {
-                            _currentFile.SaveChanges();
-                        }
-                    }
-                }
-
-                FolderBrowserDialog.Description = "Selecciona la carpeta raiz con las imágenes";
-                FolderBrowserDialog.ShowNewFolderButton = false;
-
-                var formResult = FolderBrowserDialog.ShowDialog(this);
-
-                if (formResult == DialogResult.Cancel)
-                {
-                    return;
-                }
-
-                var openFile = _currentFile;
-                ExplorerOnFileChanged(null);
-                
-                var workForm = new WorkingForm(dockTheme, "Importar Imágenes");
-
-                workForm.DoWork += (sender, args) =>
-                {
-                    var worker = sender as BackgroundWorker;
-
-                    try
-                    {
-                        _project.ImportImages(FolderBrowserDialog.SelectedPath, worker);
-
-                        worker.ReportProgress(-1, "FINALIZADO");
-                        worker.ReportProgress(-1, string.Empty);
-                    }
-                    catch (UserCancelException)
-                    {
-                        args.Cancel = true;
-                    }
+						worker.ReportProgress(-1, LanguageManager.GetTranslation(6));
+						worker.ReportProgress(-1, string.Empty);
+						worker.ReportProgress(-1, string.Format(LanguageManager.GetTranslation(21), FolderBrowserDialog.SelectedPath));
 #if !DEBUG
-                    catch (Exception e)
-                    {
-                        worker.ReportProgress(0, $"ERROR: {e.Message}");
-                    }
+					}
+					catch (UserCancelException e)
+					{
+						args.Cancel = true;
+					}
+
+					catch (Exception e)
+					{
+						worker.ReportProgress(0, $"ERROR: {e.Message}");
+					}
 #endif
-                };
+				};
 
-                workForm.ShowDialog(this);
+				workForm.ShowDialog(this);
+			}
+		}
 
-                ExplorerOnFileChanged(openFile);
-            }
-        }
-    }
+		private void ImportTexts()
+		{
+			if (_project != null)
+			{
+				if (_currentFile != null)
+				{
+					if (_currentFile.NeedSaving)
+					{
+						var result = MessageBox.Show(
+							LanguageManager.GetTranslation(12),
+							LanguageManager.GetTranslation(13),
+							MessageBoxButtons.YesNo,
+							MessageBoxIcon.Question);
+
+						if (result == DialogResult.No)
+						{
+							return;
+						}
+
+						if (result == DialogResult.Yes)
+						{
+							_currentFile.SaveChanges();
+						}
+					}
+				}
+
+				FolderBrowserDialog.Description = LanguageManager.GetTranslation(24);
+				FolderBrowserDialog.ShowNewFolderButton = false;
+
+				var formResult = FolderBrowserDialog.ShowDialog(this);
+
+				if (formResult == DialogResult.Cancel)
+				{
+					return;
+				}
+
+				var openFile = _currentFile;
+				ExplorerOnFileChanged(null);
+
+				var workForm = new WorkingForm(dockTheme, LanguageManager.GetTranslation(25));
+
+				workForm.DoWork += (sender, args) =>
+				{
+					var worker = sender as BackgroundWorker;
+
+					try
+					{
+						_project.ImportPo(FolderBrowserDialog.SelectedPath, worker);
+
+						worker.ReportProgress(-1, LanguageManager.GetTranslation(6));
+						worker.ReportProgress(-1, string.Empty);
+					}
+					catch (UserCancelException)
+					{
+						args.Cancel = true;
+					}
+#if !DEBUG
+					catch (Exception e)
+					{
+						worker.ReportProgress(0, $"ERROR: {e.Message}");
+					}
+#endif
+				};
+
+				workForm.ShowDialog(this);
+
+				ExplorerOnFileChanged(openFile);
+			}
+		}
+
+		private void ExportTextsXlsx()
+		{
+			if (_project != null)
+			{
+				if (_currentFile != null)
+				{
+					if (_currentFile.NeedSaving)
+					{
+						var result = MessageBox.Show(
+							LanguageManager.GetTranslation(12),
+							LanguageManager.GetTranslation(13),
+							MessageBoxButtons.YesNo,
+							MessageBoxIcon.Question);
+
+						if (result == DialogResult.No)
+						{
+							return;
+						}
+
+						if (result == DialogResult.Yes)
+						{
+							_currentFile.SaveChanges();
+						}
+					}
+				}
+
+				FolderBrowserDialog.Description = LanguageManager.GetTranslation(26);
+				FolderBrowserDialog.ShowNewFolderButton = true;
+
+				var formResult = FolderBrowserDialog.ShowDialog(this);
+
+				if (formResult == DialogResult.Cancel)
+				{
+					return;
+				}
+
+				var workForm = new WorkingForm(dockTheme, LanguageManager.GetTranslation(27));
+
+				workForm.DoWork += (sender, args) =>
+				{
+					var worker = sender as BackgroundWorker;
+
+#if !DEBUG
+					try
+					{
+#endif
+						_project.ExportXlsx(FolderBrowserDialog.SelectedPath, worker);
+
+						worker.ReportProgress(-1, LanguageManager.GetTranslation(6));
+						worker.ReportProgress(-1, string.Empty);
+						worker.ReportProgress(-1, string.Format(LanguageManager.GetTranslation(21), FolderBrowserDialog.SelectedPath));
+#if !DEBUG
+					}
+					catch (UserCancelException e)
+					{
+						args.Cancel = true;
+					}
+
+					catch (Exception e)
+					{
+						worker.ReportProgress(0, $"ERROR: {e.Message}");
+					}
+#endif
+				};
+
+				workForm.ShowDialog(this);
+			}
+		}
+
+		private void ImportTextsXlsxSimple()
+		{
+			if (_project != null)
+			{
+				if (_currentFile != null)
+				{
+					if (_currentFile.NeedSaving)
+					{
+						var result = MessageBox.Show(
+							LanguageManager.GetTranslation(12),
+							LanguageManager.GetTranslation(13),
+							MessageBoxButtons.YesNo,
+							MessageBoxIcon.Question);
+
+						if (result == DialogResult.No)
+						{
+							return;
+						}
+
+						if (result == DialogResult.Yes)
+						{
+							_currentFile.SaveChanges();
+						}
+					}
+				}
+
+				FolderBrowserDialog.Description = LanguageManager.GetTranslation(28);
+				FolderBrowserDialog.ShowNewFolderButton = false;
+
+				var formResult = FolderBrowserDialog.ShowDialog(this);
+
+				if (formResult == DialogResult.Cancel)
+				{
+					return;
+				}
+
+				var openFile = _currentFile;
+				ExplorerOnFileChanged(null);
+
+				var workForm = new WorkingForm(dockTheme, LanguageManager.GetTranslation(29));
+
+				workForm.DoWork += (sender, args) =>
+				{
+					var worker = sender as BackgroundWorker;
+
+					try
+					{
+						_project.ImportExcel(FolderBrowserDialog.SelectedPath, worker, false);
+
+						worker.ReportProgress(-1, LanguageManager.GetTranslation(6));
+						worker.ReportProgress(-1, string.Empty);
+					}
+					catch (UserCancelException)
+					{
+						args.Cancel = true;
+					}
+#if !DEBUG
+					catch (Exception e)
+					{
+						worker.ReportProgress(0, $"ERROR: {e.Message}");
+					}
+#endif
+				};
+
+				workForm.ShowDialog(this);
+
+				ExplorerOnFileChanged(openFile);
+			}
+		}
+
+		private void ImportTextsXlsxOffset()
+		{
+			if (_project != null)
+			{
+				if (_currentFile != null)
+				{
+					if (_currentFile.NeedSaving)
+					{
+						var result = MessageBox.Show(
+							LanguageManager.GetTranslation(12),
+							LanguageManager.GetTranslation(13),
+							MessageBoxButtons.YesNo,
+							MessageBoxIcon.Question);
+
+						if (result == DialogResult.No)
+						{
+							return;
+						}
+
+						if (result == DialogResult.Yes)
+						{
+							_currentFile.SaveChanges();
+						}
+					}
+				}
+
+				FolderBrowserDialog.Description = LanguageManager.GetTranslation(28);
+				FolderBrowserDialog.ShowNewFolderButton = false;
+
+				var formResult = FolderBrowserDialog.ShowDialog(this);
+
+				if (formResult == DialogResult.Cancel)
+				{
+					return;
+				}
+
+				var openFile = _currentFile;
+				ExplorerOnFileChanged(null);
+
+				var workForm = new WorkingForm(dockTheme, LanguageManager.GetTranslation(30));
+
+				workForm.DoWork += (sender, args) =>
+				{
+					var worker = sender as BackgroundWorker;
+
+					try
+					{
+						_project.ImportExcel(FolderBrowserDialog.SelectedPath, worker, true);
+
+						worker.ReportProgress(-1, LanguageManager.GetTranslation(6));
+						worker.ReportProgress(-1, string.Empty);
+					}
+					catch (UserCancelException)
+					{
+						args.Cancel = true;
+					}
+#if !DEBUG
+					catch (Exception e)
+					{
+						worker.ReportProgress(0, $"ERROR: {e.Message}");
+					}
+#endif
+				};
+
+				workForm.ShowDialog(this);
+
+				ExplorerOnFileChanged(openFile);
+			}
+		}
+
+		private void ImportImages()
+		{
+			if (_project != null)
+			{
+				if (_currentFile != null)
+				{
+					if (_currentFile.NeedSaving)
+					{
+						var result = MessageBox.Show(
+							LanguageManager.GetTranslation(12),
+							LanguageManager.GetTranslation(13),
+							MessageBoxButtons.YesNo,
+							MessageBoxIcon.Question);
+
+						if (result == DialogResult.No)
+						{
+							return;
+						}
+
+						if (result == DialogResult.Yes)
+						{
+							_currentFile.SaveChanges();
+						}
+					}
+				}
+
+				FolderBrowserDialog.Description = LanguageManager.GetTranslation(31);
+				FolderBrowserDialog.ShowNewFolderButton = false;
+
+				var formResult = FolderBrowserDialog.ShowDialog(this);
+
+				if (formResult == DialogResult.Cancel)
+				{
+					return;
+				}
+
+				var openFile = _currentFile;
+				ExplorerOnFileChanged(null);
+
+				var workForm = new WorkingForm(dockTheme, LanguageManager.GetTranslation(32));
+
+				workForm.DoWork += (sender, args) =>
+				{
+					var worker = sender as BackgroundWorker;
+
+					try
+					{
+						_project.ImportImages(FolderBrowserDialog.SelectedPath, worker);
+
+						worker.ReportProgress(-1, LanguageManager.GetTranslation(6));
+						worker.ReportProgress(-1, string.Empty);
+					}
+					catch (UserCancelException)
+					{
+						args.Cancel = true;
+					}
+#if !DEBUG
+					catch (Exception e)
+					{
+						worker.ReportProgress(0, $"ERROR: {e.Message}");
+					}
+#endif
+				};
+
+				workForm.ShowDialog(this);
+
+				ExplorerOnFileChanged(openFile);
+			}
+		}
+	}
 }

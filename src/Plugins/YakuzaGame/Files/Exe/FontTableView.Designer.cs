@@ -128,7 +128,7 @@ namespace YakuzaGame.Files.Exe
             this.txtTest.Name = "txtTest";
             this.txtTest.Size = new System.Drawing.Size(763, 20);
             this.txtTest.TabIndex = 9;
-            this.txtTest.Text = "Texto de prueba";
+            this.txtTest.Text = "Testo di prova";
             this.txtTest.TextChanged += new System.EventHandler(this.txtTest_TextChanged);
             // 
             // imgBoxNewChar

@@ -14,7 +14,7 @@ namespace YakuzaGame.Files.StreetName
         {
         }
 
-        protected override IList<Subtitle> GetSubtitles()
+		public override IList<Subtitle> GetSubtitles()
         {
             var result = new List<Subtitle>();
 

@@ -895,7 +895,7 @@ namespace TFGame.TrailsSky.Files.Exe
             return result;
         }
 
-        protected override IList<Subtitle> GetSubtitles()
+		public override IList<Subtitle> GetSubtitles()
         {
             var result = new List<Subtitle>();
 

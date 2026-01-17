@@ -30,7 +30,7 @@ namespace TFGame.UnderRail.Files.Exe
             "TimelapseVertigo.Rules.Characters.SkillEnum"
         };
 
-        protected override IList<Subtitle> GetSubtitles()
+		public override IList<Subtitle> GetSubtitles()
         {
             var result = new List<Subtitle>();
             var module = ModuleDefMD.Load(Path);

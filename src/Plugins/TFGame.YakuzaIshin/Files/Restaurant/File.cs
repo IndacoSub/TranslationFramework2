@@ -15,7 +15,7 @@ namespace TFGame.YakuzaIshin.Files.Restaurant
 
         private int _groupSize => 8;
 
-        protected override IList<Subtitle> GetSubtitles()
+		public override IList<Subtitle> GetSubtitles()
         {
             var result = new List<Subtitle>();
 

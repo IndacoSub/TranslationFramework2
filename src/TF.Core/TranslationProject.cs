@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DocumentFormat.OpenXml.Wordprocessing;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -8,11 +9,19 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Drawing;
 using TF.Core.Entities;
 using TF.Core.Exceptions;
 using TF.Core.Helpers;
 using TF.Core.POCO;
+using TF.Core.TranslationEntities;
 using TF.IO;
+using WeifenLuo.WinFormsUI.Docking;
+using System.Text.RegularExpressions;
+using TF.Core.Files;
+using TF.Core.Views;
+using System.Diagnostics;
 
 namespace TF.Core
 {
@@ -92,12 +101,12 @@ namespace TF.Core
 
                 string gameId = input.ReadString();
                 IGame game = pluginManager.GetGame(gameId);
-                result.Game = game ?? throw new Exception("No existe un plugin para cargar este fichero.");
+                result.Game = game ?? throw new Exception("Nessun plugin compatibile con questo file.");
 
                 int pluginVersion = input.ReadInt32();
                 if (pluginVersion > game.Version)
                 {
-                    throw new Exception("No coincide la versión del plugin instalado con la versión del que creó esta traducción.");
+                    throw new Exception("La versione installata del plugin non corrisponde a quella della traduzione.");
                 }
 
                 if (pluginVersion < game.Version)
@@ -108,7 +117,7 @@ namespace TF.Core
                 string installPath = input.ReadString();
                 if (!Directory.Exists(installPath))
                 {
-                    throw new Exception($"No se encuentra la carpeta de instalación: {installPath}");
+                    throw new Exception($"Non e' stata trovata la cartella di installazione: {installPath}");
                 }
 
                 result.InstallationPath = installPath;
@@ -209,11 +218,11 @@ namespace TF.Core
             {
                 if (worker.CancellationPending)
                 {
-                    worker.ReportProgress(0, "CANCELADO");
+                    worker.ReportProgress(0, "ANNULLATO");
                     throw new UserCancelException();
                 }
 
-                worker.ReportProgress(0, $"Procesando {container.Path}...");
+                worker.ReportProgress(0, $"Ispezionando {container.Path}...");
 
                 if (container.Type == ContainerType.Folder)
                 {
@@ -246,7 +255,7 @@ namespace TF.Core
                         File.Delete(outputFile);
                     }
 
-                    worker.ReportProgress(0, "Preparando para empaquetar...");
+                    worker.ReportProgress(0, "Copia in corso...");
                     // 1. Copiar todos los ficheros del contenedor a una carpeta temporal
                     string source = Path.Combine(ContainersFolder, container.Id);
                     string dest = Path.Combine(TempFolder, container.Id);
@@ -255,7 +264,7 @@ namespace TF.Core
                     PathHelper.CloneDirectory(source, dest);
 
                     // 2. Crear los ficheros traducidos en esa carpeta temporal
-                    worker.ReportProgress(0, "Generando ficheros traducidos...");
+                    worker.ReportProgress(0, "Generazione file temporanei...");
                     foreach (TranslationFile translationFile in container.Files)
                     {
                         if (translationFile.HasChanges || options.ForceRebuild)
@@ -273,7 +282,7 @@ namespace TF.Core
                     }
 
                     // 3. Empaquetar
-                    worker.ReportProgress(0, "Empaquetando fichero...");
+                    worker.ReportProgress(0, "Compressione file...");
                     Game.RepackFile(dest, outputFile, options.UseCompression);
 
                     // 4. Eliminar la carpeta temporal
@@ -301,11 +310,11 @@ namespace TF.Core
             {
                 if (worker.CancellationPending)
                 {
-                    worker.ReportProgress(0, "CANCELADO");
+                    worker.ReportProgress(0, "ANNULLATO");
                     throw new UserCancelException();
                 }
 
-                worker.ReportProgress(0, $"Procesando {container.Path}...");
+                worker.ReportProgress(0, $"Ispezionando {container.Path}...");
 
                 //foreach (var file in container.Files)
                 Parallel.ForEach(container.Files, file =>
@@ -330,7 +339,7 @@ namespace TF.Core
             {
                 if (worker.CancellationPending)
                 {
-                    worker.ReportProgress(0, "CANCELADO");
+                    worker.ReportProgress(0, "ANNULLATO");
                     throw new UserCancelException();
                 }
 
@@ -351,7 +360,7 @@ namespace TF.Core
 
                 string containerPath = Path.GetFullPath(Path.Combine(project.InstallationPath, container.Path));
 
-                worker.ReportProgress(0, $"Procesando {container.Path}...");
+                worker.ReportProgress(0, $"Ispezionando {container.Path}...");
                 if (container.Type == ContainerType.CompressedFile)
                 {
                     if (File.Exists(containerPath))
@@ -364,7 +373,7 @@ namespace TF.Core
 
                         foreach (GameFileSearch fileSearch in container.FileSearches)
                         {
-                            worker.ReportProgress(0, $"Buscando {fileSearch.RelativePath}\\{fileSearch.SearchPattern}...");
+                            worker.ReportProgress(0, $"Cercando {fileSearch.RelativePath}\\{fileSearch.SearchPattern}...");
                             string[] foundFiles = fileSearch.GetFiles(extractionContainerPath);
 #if DEBUG
                             foreach (string f in foundFiles)
@@ -431,11 +440,11 @@ namespace TF.Core
 
                         project.Game.PostprocessContainer(translationContainer, containerPath, extractionContainerPath);
 
-                        worker.ReportProgress(0, $"{addedFiles} ficheros encontrados y añadidos");
+                        worker.ReportProgress(0, $"{addedFiles} file trovati e aggiunti");
                     }
                     else
                     {
-                        worker.ReportProgress(0, $"ERROR: No existe el fichero comprimido {containerPath}");
+                        worker.ReportProgress(0, $"ERROR: Il file compresso non esiste: {containerPath}");
                         continue;
                     }
                 }
@@ -444,7 +453,7 @@ namespace TF.Core
                     project.Game.PreprocessContainer(translationContainer, containerPath, extractionContainerPath);
                     foreach (GameFileSearch fileSearch in container.FileSearches)
                     {
-                        worker.ReportProgress(0, $"Buscando {fileSearch.RelativePath}\\{fileSearch.SearchPattern}...");
+                        worker.ReportProgress(0, $"Cercando {fileSearch.RelativePath}\\{fileSearch.SearchPattern}...");
                         string[] foundFiles = fileSearch.GetFiles(containerPath);
 
 #if DEBUG
@@ -515,7 +524,7 @@ namespace TF.Core
 #endif
 
                         project.Game.PostprocessContainer(translationContainer, containerPath, extractionContainerPath);
-                        worker.ReportProgress(0, $"{addedFiles} ficheros encontrados y añadidos");
+                        worker.ReportProgress(0, $"{addedFiles} file trovati e aggiunti");
                     }
                 }
 
@@ -532,11 +541,11 @@ namespace TF.Core
             {
                 if (worker.CancellationPending)
                 {
-                    worker.ReportProgress(0, "CANCELADO");
+                    worker.ReportProgress(0, "ANNULLATO");
                     throw new UserCancelException();
                 }
 
-                worker.ReportProgress(0, $"Procesando {container.Path}...");
+                worker.ReportProgress(0, $"Ispezionando {container.Path}...");
 
                 foreach (TranslationFile file in container.Files)
                 {
@@ -554,11 +563,11 @@ namespace TF.Core
             {
                 if (worker.CancellationPending)
                 {
-                    worker.ReportProgress(0, "CANCELADO");
+                    worker.ReportProgress(0, "ANNULLATO");
                     throw new UserCancelException();
                 }
 
-                worker.ReportProgress(0, $"Procesando {container.Path}...");
+                worker.ReportProgress(0, $"Ispezionando {container.Path}...");
 
                 foreach (TranslationFile file in container.Files)
                 {
@@ -569,6 +578,68 @@ namespace TF.Core
                 }
             }
         }
+
+        public void ExportXlsx(string path, BackgroundWorker worker)
+        {
+            foreach (TranslationFileContainer container in FileContainers)
+            {
+				if (worker.CancellationPending)
+				{
+					worker.ReportProgress(0, "ANNULLATO");
+                    throw new UserCancelException();
+                }
+
+				
+
+				foreach (TranslationFile file in container.Files)
+				{
+					string filePath = Path.Combine(path, container.Path, file.RelativePath);
+					string fileName = Path.GetFileNameWithoutExtension(filePath);
+					string outputPath = string.Concat(@"\\?\", Path.GetFullPath(Path.Combine(Path.GetDirectoryName(filePath), string.Concat(fileName, ".xlsx"))));
+
+                    if(fileName.Contains(".tex"))
+                    {
+                        continue;
+                    }
+
+                    if(!filePath.Contains("luabytecode"))
+                    {
+                        continue;
+                    }
+
+                    worker.ReportProgress(-1, "Nome: " + fileName);
+
+                    // TODO
+                    var btf = (BinaryTextFile)file;
+                    btf._view = new GridView(btf);
+					btf._subtitles = btf.GetSubtitles();
+					btf._view.LoadData(btf._subtitles.Where(x => !string.IsNullOrEmpty(x.Text)).ToList());
+
+                    btf._view.ExportExcel();
+				}
+			}
+        }
+
+        public void ImportPoFromDirectory(string directory, string fileName, TranslationFile file, BackgroundWorker worker)
+        {
+            string newFilename = string.Concat(fileName, ".po");
+			string[] files = Directory.GetFiles(directory,
+								newFilename, SearchOption.AllDirectories);
+
+			if (files.Length > 0)
+			{
+                worker.ReportProgress(-1, "ATTENZIONE: " + files.Length.ToString() + " File trovati!");
+				foreach (string s in files)
+				{
+                    worker.ReportProgress(-1, "File trovato: " + files[files.Length - 1].ToString());
+					file.ImportPo(s);
+				}
+			}
+			else
+			{
+				//worker.ReportProgress(-1, "ERRORE: Nessun file trovato in: " + directory + " chiamato " + newFilename);
+			}
+		}
         
         public void ImportPo(string path, BackgroundWorker worker)
         {
@@ -576,11 +647,11 @@ namespace TF.Core
             {
                 if (worker.CancellationPending)
                 {
-                    worker.ReportProgress(0, "CANCELADO");
+                    worker.ReportProgress(0, "ANNULLATO");
                     throw new UserCancelException();
                 }
 
-                worker.ReportProgress(0, $"Procesando {container.Path}...");
+                worker.ReportProgress(0, $"Ispezionando {container.Path}...");
 
                 foreach (TranslationFile file in container.Files)
                 {
@@ -588,7 +659,17 @@ namespace TF.Core
                     string fileName = Path.GetFileNameWithoutExtension(filePath);
                     string inputPath = string.Concat(@"\\?\", Path.GetFullPath(Path.Combine(Path.GetDirectoryName(filePath), string.Concat(fileName, ".po"))));
 
-                    if (!File.Exists(inputPath))
+                    if(fileName.Contains(".tex"))
+                    {
+                        continue;
+					}
+
+					if (fileName.Contains(".ttf"))
+					{
+						continue;
+					}
+
+					if (!File.Exists(inputPath))
                     {
                         filePath = Path.Combine(path, file.RelativePath);
                         inputPath = string.Concat(@"\\?\", Path.GetFullPath(Path.Combine(Path.GetDirectoryName(filePath), string.Concat(fileName, ".po"))));
@@ -604,33 +685,116 @@ namespace TF.Core
                         string directory = string.Concat(@"\\?\", Path.GetFullPath(Path.GetDirectoryName(Path.Combine(path, container.Path, file.RelativePath))));
                         if (Directory.Exists(directory))
                         {
-                            string[] files = Directory.GetFiles(directory,
-                                string.Concat(fileName, ".*.po"));
+                            ImportPoFromDirectory(directory, fileName, file, worker);
+                        } else
+                        {
+							//worker.ReportProgress(-1, "ERRORE: La directory " + directory + " non esiste!");
 
-                            if (files.Length > 0)
-                            {
-                                foreach (string s in files)
-                                {
-                                    file.ImportPo(s);
-                                }
-                            }
-                        }
+                            directory = string.Concat(@"\\?\", Path.GetFullPath(path));
+							ImportPoFromDirectory(directory, fileName, file, worker);
+						}
                     }
                 }
             }
         }
 
-        public void ImportImages(string path, BackgroundWorker worker)
+		public void ImportExcel(string path, BackgroundWorker worker, bool offset)
+		{
+
+			// Attribution/credit goes to @linkmadao (GitHub)
+			// https://github.com/linkmadao/TranslationFramework2/commit/0a345928a8ac69f26caf48c478449e298b038e03
+			// https://github.com/Kaplas80/TranslationFramework2/pull/44
+
+			var arquivosProcessados = 0;
+
+			foreach (TranslationFileContainer container in FileContainers)
+			{
+				var porcentagem = (arquivosProcessados * 100) / FileContainers.Count;
+
+				if (worker.CancellationPending)
+				{
+					worker.ReportProgress(porcentagem, "CANCELADO");
+					throw new UserCancelException();
+				}
+
+				worker.ReportProgress(porcentagem, $"Procesando {container.Path}...");
+
+				foreach (TranslationFile file in container.Files)
+				{
+					string filePath = Path.Combine(path, container.Path, file.RelativePath);
+					string fileName = Path.GetFileNameWithoutExtension(filePath);
+					string inputPath = string.Concat(@"\\?\", Path.GetFullPath(Path.Combine(Path.GetDirectoryName(filePath), string.Concat(fileName, ".xlsx"))));
+
+					if (!File.Exists(inputPath))
+					{
+						filePath = Path.Combine(path, file.RelativePath);
+						inputPath = string.Concat(@"\\?\", Path.GetFullPath(Path.Combine(Path.GetDirectoryName(filePath), string.Concat(fileName, ".xlsx"))));
+					}
+
+					if (File.Exists(inputPath))
+					{
+						//Debug.WriteLine("Importo il file XLSX: " + inputPath);
+						file.ImportExcel(inputPath, worker, porcentagem, true, offset);
+					}
+					else
+					{
+						// Comprobamos si el fichero está partido
+						string directory = string.Concat(@"\\?\", Path.GetFullPath(Path.GetDirectoryName(Path.Combine(path, container.Path, file.RelativePath))));
+						if (Directory.Exists(directory))
+						{
+							string[] files = Directory.GetFiles(directory,
+								string.Concat(fileName, ".xlsx"), SearchOption.AllDirectories);
+
+							if (files.Length > 0)
+							{
+								foreach (string s in files)
+								{
+									//Debug.WriteLine("Importo il file XLSX: " + s);
+									file.ImportExcel(s, worker, porcentagem, true, offset);
+								}
+							} else
+                            {
+                                //Debug.WriteLine("Nessun XLSX trovato nella directory! " + directory);
+                            }
+						} else
+                        {
+                            //Debug.WriteLine("La directory non esiste: " + directory);
+
+							directory = string.Concat(@"\\?\", Path.GetFullPath(path));
+							string[] files = Directory.GetFiles(directory,
+								string.Concat(fileName, ".xlsx"), SearchOption.AllDirectories);
+
+							if (files.Length > 0)
+							{
+								foreach (string s in files)
+								{
+									//Debug.WriteLine("Importo il file XLSX: " + s);
+									file.ImportExcel(s, worker, porcentagem, true, offset);
+								}
+							}
+							else
+							{
+								//Debug.WriteLine("Nessun XLSX trovato nella directory! " + directory);
+							}
+						}
+					}
+				}
+
+				arquivosProcessados += 1;
+			}
+		}
+
+		public void ImportImages(string path, BackgroundWorker worker)
         {
             foreach (TranslationFileContainer container in FileContainers)
             {
                 if (worker.CancellationPending)
                 {
-                    worker.ReportProgress(0, "CANCELADO");
+                    worker.ReportProgress(0, "ANNULLATO");
                     throw new UserCancelException();
                 }
 
-                worker.ReportProgress(0, $"Procesando {container.Path}...");
+                worker.ReportProgress(0, $"Ispezionando {container.Path}...");
 
                 foreach (TranslationFile file in container.Files)
                 {

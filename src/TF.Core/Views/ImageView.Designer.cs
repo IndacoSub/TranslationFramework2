@@ -75,7 +75,7 @@ namespace TF.Core.Views
             this.btnImportImage.Name = "btnImportImage";
             this.btnImportImage.Size = new System.Drawing.Size(75, 23);
             this.btnImportImage.TabIndex = 5;
-            this.btnImportImage.Text = "Importar";
+            this.btnImportImage.Text = "Importa";
             this.btnImportImage.UseVisualStyleBackColor = true;
             this.btnImportImage.Click += new System.EventHandler(this.btnImportImage_Click);
             // 
@@ -86,7 +86,7 @@ namespace TF.Core.Views
             this.btnExportImage.Name = "btnExportImage";
             this.btnExportImage.Size = new System.Drawing.Size(75, 23);
             this.btnExportImage.TabIndex = 6;
-            this.btnExportImage.Text = "Exportar";
+            this.btnExportImage.Text = "Esporta";
             this.btnExportImage.UseVisualStyleBackColor = true;
             this.btnExportImage.Click += new System.EventHandler(this.btnExportImage_Click);
             // 
@@ -96,8 +96,8 @@ namespace TF.Core.Views
             this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox1.FormattingEnabled = true;
             this.comboBox1.Items.AddRange(new object[] {
-            "Fondo transparente",
-            "Fondo negro"});
+            "Sfondo transparente",
+            "Sfondo nero"});
             this.comboBox1.Location = new System.Drawing.Point(408, 369);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(187, 21);

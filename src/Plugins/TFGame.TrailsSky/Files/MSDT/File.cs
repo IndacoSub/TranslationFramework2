@@ -17,7 +17,7 @@ namespace TFGame.TrailsSky.Files.MSDT
             customEncoding = new Encoding();
         }
 
-        protected override IList<Subtitle> GetSubtitles()
+		public override IList<Subtitle> GetSubtitles()
         {
             var result = new List<Subtitle>();
 

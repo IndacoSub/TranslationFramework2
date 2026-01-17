@@ -10,193 +10,195 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace TF.GUI
 {
-    partial class MainForm
-    {
-        private readonly ToolStripRenderer _toolStripProfessionalRenderer = new ToolStripProfessionalRenderer();
-        
-        private ExplorerForm _explorer;
-        private SearchResultsForm _searchResults;
+	partial class MainForm
+	{
+		private readonly ToolStripRenderer _toolStripProfessionalRenderer = new ToolStripProfessionalRenderer();
 
-        private void ConfigureDock()
-        {
-            _explorer = new ExplorerForm();
-            _explorer.FileChanged += ExplorerOnFileChanged;
-            _explorer.RestoreItem += ExplorerOnRestoreItem;
+		private ExplorerForm _explorer;
+		private SearchResultsForm _searchResults;
 
-            _searchResults = new SearchResultsForm();
-            _searchResults.FileChanged += ExplorerOnFileChanged;
+		private void ConfigureDock()
+		{
+			_explorer = new ExplorerForm();
+			_explorer.UpdateGUIText();
+			_explorer.FileChanged += ExplorerOnFileChanged;
+			_explorer.RestoreItem += ExplorerOnRestoreItem;
 
-            tsExtender.DefaultRenderer = _toolStripProfessionalRenderer;
-            
-            dockPanel.Theme = dockTheme;
-            dockPanel.DocumentStyle = DocumentStyle.DockingSdi;
-            EnableVsRenderer(VisualStudioToolStripExtender.VsVersion.Vs2015, dockTheme);
+			_searchResults = new SearchResultsForm();
+			_searchResults.UpdateGUIText();
+			_searchResults.FileChanged += ExplorerOnFileChanged;
 
-            if (!string.IsNullOrEmpty(Settings.Default.WindowLayout))
-            {
-                using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(Settings.Default.WindowLayout)))
-                {
-                    dockPanel.LoadFromXml(ms, GetContentFromPersistString);
-                }
+			tsExtender.DefaultRenderer = _toolStripProfessionalRenderer;
 
-                if (_explorer.DockPanel == null)
-                {
-                    _explorer.Show(dockPanel, DockState.DockLeft);
-                }
+			dockPanel.Theme = dockTheme;
+			dockPanel.DocumentStyle = DocumentStyle.DockingSdi;
+			EnableVsRenderer(VisualStudioToolStripExtender.VsVersion.Vs2015, dockTheme);
 
-                if (_searchResults.DockPanel == null)
-                {
-                    _searchResults.Show(dockPanel, DockState.DockBottomAutoHide);
-                }
-            }
-            else
-            {
-                _explorer.Show(dockPanel, DockState.DockLeft);
-                _searchResults.Show(dockPanel, DockState.DockBottomAutoHide);
-            }
-        }
+			if (!string.IsNullOrEmpty(Settings.Default.WindowLayout))
+			{
+				using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(Settings.Default.WindowLayout)))
+				{
+					dockPanel.LoadFromXml(ms, GetContentFromPersistString);
+				}
 
-        private bool ExplorerOnFileChanged(TranslationFile selectedFile)
-        {
-            if (CloseAllDocuments())
-            {
-                _currentFile = selectedFile;
+				if (_explorer.DockPanel == null)
+				{
+					_explorer.Show(dockPanel, DockState.DockLeft);
+				}
 
-                if (_currentFile != null)
-                {
-                    _currentFile.Open(dockPanel);
-                    _currentFile.FileChanged += SelectedFileChanged;
-                }
+				if (_searchResults.DockPanel == null)
+				{
+					_searchResults.Show(dockPanel, DockState.DockBottomAutoHide);
+				}
+			}
+			else
+			{
+				_explorer.Show(dockPanel, DockState.DockLeft);
+				_searchResults.Show(dockPanel, DockState.DockBottomAutoHide);
+			}
+		}
 
-                mniEditSearch.Enabled = _currentFile != null && _currentFile.Type == FileType.TextFile;
-                tsbSearch.Enabled = _currentFile != null && _currentFile.Type == FileType.TextFile;
+		private bool ExplorerOnFileChanged(TranslationFile selectedFile)
+		{
+			if (CloseAllDocuments())
+			{
+				_currentFile = selectedFile;
 
-                return false;
-            }
+				if (_currentFile != null)
+				{
+					_currentFile.Open(dockPanel);
+					_currentFile.FileChanged += SelectedFileChanged;
+				}
 
-            mniEditSearch.Enabled = _currentFile != null && _currentFile.Type == FileType.TextFile;
-            tsbSearch.Enabled = _currentFile != null && _currentFile.Type == FileType.TextFile;
+				mniEditSearch.Enabled = _currentFile != null && _currentFile.Type == FileType.TextFile;
+				tsbSearch.Enabled = _currentFile != null && _currentFile.Type == FileType.TextFile;
 
-            return true;
-        }
+				return false;
+			}
 
-        private void ExplorerOnRestoreItem(object selectedNode)
-        {
-            if (selectedNode is TranslationFileContainer container)
-            {
-                var result =
-                    MessageBox.Show(
-                        "Esto restaurará los ficheros originales de este contenedor. Esta operación no se puede deshacer.\n¿Quieres continuar?",
-                        "Restaurar ficheros", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+			mniEditSearch.Enabled = _currentFile != null && _currentFile.Type == FileType.TextFile;
+			tsbSearch.Enabled = _currentFile != null && _currentFile.Type == FileType.TextFile;
 
-                if (result == DialogResult.Yes)
-                {
-                    container.Restore();
-                    RefreshView();
-                }
+			return true;
+		}
 
-                return;
-            }
+		private void ExplorerOnRestoreItem(object selectedNode)
+		{
+			if (selectedNode is TranslationFileContainer container)
+			{
+				var result =
+					MessageBox.Show(
+						"Esto restaurará los ficheros originales de este contenedor. Esta operación no se puede deshacer.\n¿Quieres continuar?",
+						"Restaurar ficheros", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
-            if (selectedNode is TranslationFile file)
-            {
-                var result =
-                    MessageBox.Show(
-                        "Esto restaurará el fichero original. Esta operación no se puede deshacer.\n¿Quieres continuar?",
-                        "Restaurar ficheros", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+				if (result == DialogResult.Yes)
+				{
+					container.Restore();
+					RefreshView();
+				}
 
-                if (result == DialogResult.Yes)
-                {
-                    file.Restore();
-                    RefreshView();
-                }
+				return;
+			}
 
-                return;
-            }
-        }
+			if (selectedNode is TranslationFile file)
+			{
+				var result =
+					MessageBox.Show(
+						"Questo ripristinerà il file originale.\nNon si può recuperare un file ripristinato.",
+						"Ripristinare il file?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
-        private void RefreshView()
-        {
-            if (CloseAllDocuments())
-            {
-                if (_currentFile != null)
-                {
-                    _currentFile.Open(dockPanel);
-                    _currentFile.FileChanged += SelectedFileChanged;
-                }
-            }
-        }
+				if (result == DialogResult.Yes)
+				{
+					file.Restore();
+					RefreshView();
+				}
 
-        private void SelectedFileChanged()
-        {
-            mniFileSave.Enabled = _currentFile != null && _currentFile.NeedSaving;
-            tsbSaveFile.Enabled = _currentFile != null && _currentFile.NeedSaving;
-        }
+				return;
+			}
+		}
 
-        private bool CloseAllDocuments()
-        {
-            if (_currentFile != null)
-            {
-                if (_currentFile.NeedSaving)
-                {
-                    var result = MessageBox.Show("Hay cambios pendientes en el fichero.\n¿Quieres guardarlos?",
-                        "Guardar cambios", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+		private void RefreshView()
+		{
+			if (CloseAllDocuments())
+			{
+				if (_currentFile != null)
+				{
+					_currentFile.Open(dockPanel);
+					_currentFile.FileChanged += SelectedFileChanged;
+				}
+			}
+		}
 
-                    if (result == DialogResult.Cancel)
-                    {
-                        return false;
-                    }
+		private void SelectedFileChanged()
+		{
+			mniFileSave.Enabled = _currentFile != null && _currentFile.NeedSaving;
+			tsbSaveFile.Enabled = _currentFile != null && _currentFile.NeedSaving;
+		}
 
-                    if (result == DialogResult.Yes)
-                    {
-                        _currentFile.SaveChanges();
-                    }
-                }
+		private bool CloseAllDocuments()
+		{
+			if (_currentFile != null)
+			{
+				if (_currentFile.NeedSaving)
+				{
+					var result = MessageBox.Show("Ci sono cambiamenti non salvati nel file.\nDesideri salvare?",
+						"Cambiamenti ambigui", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
 
-                _currentFile.FileChanged -= SelectedFileChanged;
-            }
+					if (result == DialogResult.Cancel)
+					{
+						return false;
+					}
 
-            var documents = dockPanel.DocumentsToArray();
-            foreach (var document in documents)
-            {
-                document.DockHandler.Form.Close();
-                document.DockHandler.DockPanel = null;
-            }
+					if (result == DialogResult.Yes)
+					{
+						_currentFile.SaveChanges();
+					}
+				}
 
-            return true;
-        }
+				_currentFile.FileChanged -= SelectedFileChanged;
+			}
 
-        private void EnableVsRenderer(VisualStudioToolStripExtender.VsVersion version, ThemeBase theme)
-        {
-            tsExtender.SetStyle(mnuMain, version, theme);
-            tsExtender.SetStyle(tlsMain, version, theme);
-        }
+			var documents = dockPanel.DocumentsToArray();
+			foreach (var document in documents)
+			{
+				document.DockHandler.Form.Close();
+				document.DockHandler.DockPanel = null;
+			}
 
-        private IDockContent GetContentFromPersistString(string persistString)
-        {
-            if (persistString == typeof(ExplorerForm).ToString())
-            {
-                return _explorer;
-            }
+			return true;
+		}
 
-            if (persistString == typeof(SearchResultsForm).ToString())
-            {
-                return _searchResults;
-            }
+		private void EnableVsRenderer(VisualStudioToolStripExtender.VsVersion version, ThemeBase theme)
+		{
+			tsExtender.SetStyle(mnuMain, version, theme);
+			tsExtender.SetStyle(tlsMain, version, theme);
+		}
 
-            return null;
-        }
+		private IDockContent GetContentFromPersistString(string persistString)
+		{
+			if (persistString == typeof(ExplorerForm).ToString())
+			{
+				return _explorer;
+			}
 
-        private void SaveDockSettings()
-        {
-            using (var ms = new MemoryStream())
-            {
-                dockPanel.SaveAsXml(ms, Encoding.UTF8);
-                ms.Seek(0, SeekOrigin.Begin);
+			if (persistString == typeof(SearchResultsForm).ToString())
+			{
+				return _searchResults;
+			}
 
-                var buff = ms.GetBuffer();
-                Settings.Default.WindowLayout = Encoding.UTF8.GetString(buff);
-            }
-        }
-    }
+			return null;
+		}
+
+		private void SaveDockSettings()
+		{
+			using (var ms = new MemoryStream())
+			{
+				dockPanel.SaveAsXml(ms, Encoding.UTF8);
+				ms.Seek(0, SeekOrigin.Begin);
+
+				var buff = ms.GetBuffer();
+				Settings.Default.WindowLayout = Encoding.UTF8.GetString(buff);
+			}
+		}
+	}
 }

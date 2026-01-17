@@ -16,7 +16,7 @@
         {
         }
 
-        protected override IList<Subtitle> GetSubtitles()
+		public override IList<Subtitle> GetSubtitles()
         {
             var result = new List<Subtitle>();
             using (var fs = new FileStream(Path, FileMode.Open))

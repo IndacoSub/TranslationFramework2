@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.IO;
 using System.Text;
 using ScintillaNET;
@@ -149,5 +150,15 @@ namespace TF.Core.Entities
         {
             return System.IO.Path.GetFileName(Path);
         }
-    }
+
+		public virtual void ExportExcel(string path)
+		{
+
+		}
+
+		public virtual void ImportExcel(string path, BackgroundWorker worker, int porcentagem, bool save = true, bool offset = false)
+		{
+
+		}
+	}
 }

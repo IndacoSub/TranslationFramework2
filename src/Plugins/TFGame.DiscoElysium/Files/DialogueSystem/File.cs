@@ -16,7 +16,7 @@
         {
         }
 
-        protected override IList<Subtitle> GetSubtitles()
+		public override IList<Subtitle> GetSubtitles()
         {
             using (var fs = new FileStream(Path, FileMode.Open))
             using (var input = new ExtendedBinaryReader(fs, FileEncoding))
@@ -25,7 +25,7 @@
             }
         }
 
-        protected IList<Subtitle> GetSubtitles(ExtendedBinaryReader input)
+		public IList<Subtitle> GetSubtitles(ExtendedBinaryReader input)
         {
             var result = new List<Subtitle>();
 

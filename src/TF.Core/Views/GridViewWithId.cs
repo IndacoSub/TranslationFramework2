@@ -180,7 +180,7 @@
             }
             catch (Exception e)
             {
-                MessageBox.Show($"No se ha podido abrir el fichero.\r\n{e.GetType()}: {e.Message}", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Non è stato possibile aprire il file.\r\n{e.GetType()}: {e.Message}", "ERRORE", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }
